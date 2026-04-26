@@ -88,7 +88,36 @@
 
         return report;
     }
-</script> 
+</script>
+    <script>
+    async function getAppleIntel() {
+        let model = "Generic Apple Device";
+        const w = window.screen.width;
+        const h = window.screen.height;
+        const r = window.devicePixelRatio;
+
+        // 1. Physical Dimension Mapping (The Apple Bypass)
+        // Apple masks the name, but they can't mask the screen pixels.
+        if (w === 430 && h === 932) model = "iPhone 15/14 Pro Max";
+        else if (w === 393 && h === 852) model = "iPhone 15/14 Pro";
+        else if (w === 428 && h === 926) model = "iPhone 14 Plus / 13 Pro Max";
+        else if (w === 390 && h === 844) model = "iPhone 14/13/13 Pro";
+        else if (w === 375 && h === 812) model = "iPhone 13 mini / 12 mini / 11 Pro";
+        else if (w === 414 && h === 896) model = "iPhone 11 Pro Max / XS Max / XR";
+        else if (w === 834 && h === 1194) model = "iPad Pro 11-inch";
+        else if (w === 1024 && h === 1366) model = "iPad Pro 12.9-inch";
+
+        // 2. The GPU Layer
+        let gpu = "Masked Apple GPU";
+        try {
+            const gl = document.createElement('canvas').getContext('webgl');
+            const debug = gl.getExtension('WEBGL_debug_renderer_info');
+            gpu = gl.getParameter(debug.UNMASKED_RENDERER_WEBGL).split('Apple ').pop();
+        } catch(e) {}
+
+        return ` ${model}\nChip: ${gpu}`;
+    }
+</script>
 <script>
     async function getNetwork() {
         const buster = "?cb=" + Date.now();
